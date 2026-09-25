@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Parijai Group — Hotels & Residencies</title>
+    <meta
+      name="description"
+      content="Thoughtful Hospitality, Dedicated Care. Luxury mountain stays at Trikuta Residency Gangtok and specialized medical convenience at Hotel Parijaye near AIIMS Kalyani."
+    />
+    <meta property="og:title" content="Parijai Group — Hotels & Residencies" />
+    <meta
+      property="og:description"
+      content="Thoughtful Hospitality, Dedicated Care. Luxury mountain stays at Trikuta Residency Gangtok and specialized medical convenience at Hotel Parijaye near AIIMS Kalyani."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Parijai Group" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Parijai Group — Hotels & Residencies" />
+    <meta
+      name="twitter:description"
+      content="Thoughtful Hospitality, Dedicated Care. Gangtok & Kalyani."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Schema.org LodgingBusiness Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Hotel",
+          "@id": "https://parijaigroup.com/#trikuta-residency",
+          "name": "Trikuta Residency (Parijai Group)",
+          "description": "Serene Himalayan mountain retreat in Gangtok, Sikkim with Kanchenjunga valley views and wooden aesthetics.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Gangtok",
+            "addressRegion": "Sikkim",
+            "addressCountry": "IN"
+          },
+          "priceRange": "₹2,650 - ₹5,400",
+          "starRating": {
+            "@type": "Rating",
+            "ratingValue": "4.7"
+          },
+          "amenityFeature": [
+            { "@type": "LocationFeatureSpecification", "name": "Heated Rooms" },
+            { "@type": "LocationFeatureSpecification", "name": "Valley View Balconies" },
+            { "@type": "LocationFeatureSpecification", "name": "In-house Sikkimese Dining" },
+            { "@type": "LocationFeatureSpecification", "name": "Nathula Pass Travel Desk" }
+          ]
+        },
+        {
+          "@type": "Hotel",
+          "@id": "https://parijaigroup.com/#hotel-parijaye",
+          "name": "Hotel Parijaye (Parijai Group)",
+          "description": "Pristine, elevator-equipped comfort stay tailored for medical convenience, patient attendants and doctors near AIIMS Kalyani.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Kalyani",
+            "addressRegion": "West Bengal",
+            "addressCountry": "IN"
+          },
+          "priceRange": "₹1,850 - ₹3,950",
+          "starRating": {
+            "@type": "Rating",
+            "ratingValue": "4.8"
+          },
+          "amenityFeature": [
+            { "@type": "LocationFeatureSpecification", "name": "3-min to AIIMS Kalyani OPD" },
+            { "@type": "LocationFeatureSpecification", "name": "Elevator & Wheelchair Accessible" },
+            { "@type": "LocationFeatureSpecification", "name": "Kitchenette & Customized Diet Kitchen" },
+            { "@type": "LocationFeatureSpecification", "name": "Daily Shuttle Transit" }
+          ]
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-amber-100 selection:text-slate-900">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
