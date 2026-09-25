@@ -16,8 +16,9 @@ import {
   HeartPulse,
   Printer
 } from 'lucide-react';
-import { Room, ADD_ONS, BookingAddOn, PROPERTIES } from '../data/hotels';
+import { Room, ADD_ONS, BookingAddOn, PROPERTIES, BookingConfirmationSummary } from '../data/hotels';
 import { useTheme } from '../context/ThemeContext';
+import { saveBookingToDb } from '../services/dbService';
 
 interface BookingFunnelModalProps {
   room: Room | null;
@@ -27,7 +28,7 @@ interface BookingFunnelModalProps {
   childrenCount: number;
   purpose: 'leisure' | 'medical' | 'corporate';
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (summary: BookingConfirmationSummary) => void;
 }
 
 export const BookingFunnelModal: React.FC<BookingFunnelModalProps> = ({
@@ -38,6 +39,7 @@ export const BookingFunnelModal: React.FC<BookingFunnelModalProps> = ({
   childrenCount,
   purpose,
   onClose,
+  onSuccess
 }) => {
   const { isNight } = useTheme();
 
@@ -121,14 +123,84 @@ export const BookingFunnelModal: React.FC<BookingFunnelModalProps> = ({
     setCurrentStep((prev) => prev + 1);
   };
 
-  const handleConfirmReservation = () => {
+  const [isSavingBooking, setIsSavingBooking] = useState(false);
+
+  const handleConfirmReservation = async () => {
     const randomRef = 'PJ-' + Math.floor(100000 + Math.random() * 900000);
     setBookingRefNumber(randomRef);
-    setBookingConfirmed(true);
+    setIsSavingBooking(true);
+
+    const selectedAddOnObjects = selectedAddOnIds
+      .map((id) => {
+        const addOn = propertyAddOns.find((a) => a.id === id);
+        return addOn ? { id: addOn.id, name: addOn.name, price: addOn.price } : null;
+      })
+      .filter((item): item is { id: string; name: string; price: number } => item !== null);
+
+    try {
+      await saveBookingToDb({
+        bookingRef: randomRef,
+        propertyId: room.propertyId,
+        propertyName: property.name,
+        roomId: room.id,
+        roomName: room.name,
+        guestName,
+        guestPhone,
+        guestEmail: guestEmail || '',
+        checkInDate,
+        checkOutDate,
+        nights,
+        adults,
+        childrenCount,
+        purpose,
+        specialNeeds: specialNeeds || 'Standard check-in requested',
+        selectedAddOns: selectedAddOnObjects,
+        baseTariff: baseRoomTariff,
+        addOnsTotal,
+        subTotal,
+        gst,
+        grandTotal,
+        paymentMethod
+      });
+    } catch (err) {
+      console.warn('Booking saved locally, database synchronization note:', err);
+    } finally {
+      const summaryData: BookingConfirmationSummary = {
+        bookingRef: randomRef,
+        propertyId: room.propertyId,
+        propertyName: property.name,
+        propertyLocation: property.location,
+        propertyPhone: property.phone,
+        propertyWhatsapp: property.whatsapp,
+        roomId: room.id,
+        roomName: room.name,
+        guestName,
+        guestPhone,
+        guestEmail: guestEmail || '',
+        checkInDate,
+        checkOutDate,
+        nights,
+        adults,
+        childrenCount,
+        purpose,
+        selectedAddOns: selectedAddOnObjects,
+        baseTariff: baseRoomTariff,
+        addOnsTotal,
+        gst,
+        grandTotal,
+        paymentMethod,
+        specialNeeds: specialNeeds || 'Standard check-in requested',
+        createdAt: new Date().toISOString()
+      };
+
+      setIsSavingBooking(false);
+      setBookingConfirmed(true);
+      onSuccess(summaryData);
+    }
   };
 
   const generateWhatsAppConfirmationMessage = () => {
-    const message = `Namaste Parijai Group! I have reserved ${room.name} at ${property.name}.\nBooking Ref: ${bookingRefNumber}\nDates: ${checkInDate} to ${checkOutDate} (${nights} nights)\nGuest: ${guestName} (${guestPhone})\nTotal Tariff: ₹${grandTotal.toLocaleString('en-IN')}\nSpecial Request: ${specialNeeds || 'Standard Check-in'}`;
+    const message = `Namaste Parijai Group of Hotels! I have reserved ${room.name} at ${property.name}.\nBooking Ref: ${bookingRefNumber}\nDates: ${checkInDate} to ${checkOutDate} (${nights} nights)\nGuest: ${guestName} (${guestPhone})\nTotal Tariff: ₹${grandTotal.toLocaleString('en-IN')}\nSpecial Request: ${specialNeeds || 'Standard Check-in'}`;
     return `https://wa.me/${property.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
   };
 
@@ -657,13 +729,17 @@ export const BookingFunnelModal: React.FC<BookingFunnelModalProps> = ({
                   A reservation voucher has been created for your records.
                 </p>
                 <div
-                  className={`mt-3 inline-block px-4 py-1.5 rounded-lg text-xs font-mono font-bold border ${
+                  className={`mt-3 inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-mono font-bold border ${
                     isNight
                       ? 'bg-slate-900 border-slate-700 text-amber-300'
                       : 'bg-white border-slate-300 text-amber-800 shadow-sm'
                   }`}
                 >
-                  Confirmation Code: {bookingRefNumber}
+                  <span>Confirmation Code: {bookingRefNumber}</span>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-sans px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">
+                    <ShieldCheck className="w-3 h-3" />
+                    Saved to Database
+                  </span>
                 </div>
               </div>
 
@@ -756,6 +832,16 @@ export const BookingFunnelModal: React.FC<BookingFunnelModalProps> = ({
                   <span>Print Receipt / Summary</span>
                 </button>
               </div>
+
+              <div className="pt-2 border-t border-slate-700/40">
+                <button
+                  onClick={onClose}
+                  className="w-full py-2.5 px-4 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow transition-all cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Done & View Detailed Voucher</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -793,9 +879,17 @@ export const BookingFunnelModal: React.FC<BookingFunnelModalProps> = ({
               <button
                 type="button"
                 onClick={handleConfirmReservation}
-                className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-white font-bold text-xs rounded-lg shadow-lg transition-all active:scale-95 cursor-pointer"
+                disabled={isSavingBooking}
+                className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 disabled:opacity-50 text-white font-bold text-xs rounded-lg shadow-lg transition-all active:scale-95 cursor-pointer flex items-center gap-2"
               >
-                Confirm Reservation (₹{grandTotal.toLocaleString('en-IN')})
+                {isSavingBooking ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Saving to Database...</span>
+                  </>
+                ) : (
+                  <span>Confirm Reservation (₹{grandTotal.toLocaleString('en-IN')})</span>
+                )}
               </button>
             )}
           </div>

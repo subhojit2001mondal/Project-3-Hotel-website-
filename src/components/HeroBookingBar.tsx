@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { PROPERTIES } from '../data/hotels';
 import { useTheme } from '../context/ThemeContext';
+import { ParijaiLogo } from './ParijaiLogo';
 
 interface HeroBookingBarProps {
   selectedProperty: 'gangtok' | 'kalyani';
@@ -196,6 +197,15 @@ export const HeroBookingBar: React.FC<HeroBookingBarProps> = ({
 
         {/* Hero Title & Subtitle */}
         <div className="max-w-3xl mb-8">
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-slate-950/85 backdrop-blur-md border border-emerald-500/30 text-xs mb-4 shadow-xl">
+            <ParijaiLogo size={24} />
+            <span className="font-serif font-bold tracking-wider text-amber-300 uppercase">
+              Parijai Group of Hotels
+            </span>
+            <span className="text-slate-500">·</span>
+            <span className="text-emerald-400 font-medium">Gangtok & Kalyani</span>
+          </div>
+
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-white text-balance leading-tight drop-shadow-md">
             Thoughtful Hospitality,{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-200 to-emerald-300">
@@ -203,7 +213,7 @@ export const HeroBookingBar: React.FC<HeroBookingBarProps> = ({
             </span>
           </h1>
           <p className="mt-4 text-base sm:text-lg text-slate-200 text-balance leading-relaxed drop-shadow-sm font-normal">
-            From the peaceful Kanchenjunga ridges of <strong>Trikuta Residency (Gangtok)</strong> to the compassionate,
+            Welcome to <strong>Parijai Group of Hotels</strong> — from the peaceful Kanchenjunga ridges of <strong>Trikuta Residency (Gangtok)</strong> to the compassionate,
             elevator-equipped comfort at <strong>Hotel Parijaye (3-min to AIIMS Kalyani)</strong>.
           </p>
 

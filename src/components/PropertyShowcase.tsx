@@ -35,10 +35,19 @@ import {
   MapPin,
   Phone,
   MessageCircle,
-  ExternalLink
+  ExternalLink,
+  Database,
+  Tv,
+  Wifi,
+  Camera
 } from 'lucide-react';
 import { PROPERTIES, ROOMS, Room } from '../data/hotels';
 import { useTheme } from '../context/ThemeContext';
+import {
+  GalleryId,
+  GalleryPhoto,
+  GALLERY_PLACEHOLDERS
+} from '../services/dbService';
 import {
   StoredPhoto as UserPhoto,
   getStoredPhotos,
@@ -56,6 +65,8 @@ interface PropertyShowcaseProps {
   purpose: 'leisure' | 'medical' | 'corporate';
   onReserveRoom: (room: Room) => void;
   isLoading: boolean;
+  galleryPhotos?: Record<GalleryId, GalleryPhoto[]>;
+  onOpenManagePhotos?: (galleryId?: GalleryId) => void;
 }
 
 // Verified Spaces for Hotel Parijaye (AIIMS Kalyani)
@@ -203,6 +214,13 @@ export const PropertyShowcase: React.FC<PropertyShowcaseProps> = ({
   purpose,
   onReserveRoom,
   isLoading,
+  galleryPhotos = {
+    'rooms/view-room': [],
+    'rooms/non-view-room': [],
+    'common/reception': [],
+    'common/dining': []
+  },
+  onOpenManagePhotos
 }) => {
   const [activeTab, setActiveTab] = useState<'gangtok' | 'kalyani'>(activeProperty);
   const { isNight } = useTheme();
@@ -423,6 +441,16 @@ export const PropertyShowcase: React.FC<PropertyShowcaseProps> = ({
     setLightboxPhoto(photo);
   };
 
+  const handleOpenCustomLightbox = (photo: { url: string; title: string; caption?: string }) => {
+    setLightboxPhoto({
+      id: `gallery-lightbox-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+      url: photo.url,
+      title: photo.title,
+      caption: photo.caption || '',
+      addedAt: Date.now()
+    });
+  };
+
   const closeLightbox = () => {
     setLightboxPhoto(null);
   };
@@ -624,7 +652,7 @@ export const PropertyShowcase: React.FC<PropertyShowcaseProps> = ({
 
                 <a
                   href={`https://wa.me/919163008361?text=${encodeURIComponent(
-                    `Hello Parijai Group, I am inquiring about booking and tariffs at ${property.name}.`
+                    `Hello Parijai Group of Hotels, I am inquiring about booking and tariffs at ${property.name}.`
                   )}`}
                   target="_blank"
                   rel="noreferrer"
@@ -777,13 +805,19 @@ export const PropertyShowcase: React.FC<PropertyShowcaseProps> = ({
                       : 'Hotel Parijaye Authentic Photos · AIIMS Kalyani, West Bengal'}
                   </span>
                 </div>
-                <h3
-                  className={`text-xl sm:text-2xl font-serif font-bold mt-2 ${
-                    isNight ? 'text-white' : 'text-slate-950'
-                  }`}
-                >
-                  Photos of {property.name}
-                </h3>
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                  <h3
+                    className={`text-xl sm:text-2xl font-serif font-bold ${
+                      isNight ? 'text-white' : 'text-slate-950'
+                    }`}
+                  >
+                    Photos of {property.name}
+                  </h3>
+                  <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-medium">
+                    <Database className="w-3 h-3" />
+                    <span>Database Synced</span>
+                  </span>
+                </div>
                 <p className={`text-xs sm:text-sm mt-1 ${isNight ? 'text-slate-400' : 'text-slate-600'}`}>
                   {activeTab === 'gangtok'
                     ? 'Authentic photos of Trikuta Residency in Upper Arithang, Gangtok.'
@@ -1326,8 +1360,96 @@ export const PropertyShowcase: React.FC<PropertyShowcaseProps> = ({
               </div>
             ))}
           </div>
+        ) : activeTab === 'gangtok' ? (
+          /* Gangtok: Exactly Two Room Types - View Room (Deluxe) & Non-View Room (Regular) */
+          <div>
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {sortedRooms.map((room) => {
+                const isViewRoom = room.id === 'g-view-deluxe';
+                const galleryId: GalleryId = isViewRoom ? 'rooms/view-room' : 'rooms/non-view-room';
+                const photosForRoom = galleryPhotos[galleryId] || [];
+
+                return (
+                  <TrikutaRoomCard
+                    key={room.id}
+                    room={room}
+                    galleryId={galleryId}
+                    photos={photosForRoom}
+                    isNight={isNight}
+                    onReserve={() => onReserveRoom(room)}
+                    onOpenManagePhotos={() => onOpenManagePhotos?.(galleryId)}
+                    onOpenLightbox={handleOpenCustomLightbox}
+                  />
+                );
+              })}
+            </div>
+
+            {/* COMMON SPACES SECTION (Trikuta Residency) */}
+            <div className="mt-16 pt-12 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider bg-amber-400/15 text-amber-500 border border-amber-400/30">
+                    <Compass className="w-3.5 h-3.5" />
+                    <span>Shared Property Spaces · Not Bookable</span>
+                  </div>
+                  <h3 className={`text-2xl sm:text-3xl font-serif font-bold mt-2 ${isNight ? 'text-white' : 'text-slate-950'}`}>
+                    Common Spaces & Guest Areas
+                  </h3>
+                  <p className={`text-xs sm:text-sm mt-1 max-w-2xl ${isNight ? 'text-slate-400' : 'text-slate-600'}`}>
+                    Welcoming shared property amenities at Trikuta Residency. These common spaces are included with your stay and are not bookable as rooms.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => onOpenManagePhotos?.('common/reception')}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-400 text-slate-950 hover:bg-amber-300 transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer shadow"
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                  <span>Manage Common Area Photos</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* 1. Reception Area */}
+                <CommonSpaceCard
+                  galleryId="common/reception"
+                  name="Reception Area & Check-in Lobby"
+                  badge="Lobby & Tour Desk"
+                  description="Warm welcoming check-in desk, marble staircase, cozy leather seating lounge, and dedicated travel permit desk for Nathula Pass, Tsomgo Lake, and North Sikkim excursions."
+                  highlights={[
+                    '24/7 Front Check-in & Concierge Desk',
+                    'Dedicated Nathula Pass & Tsomgo Permits Help Desk',
+                    'Cozy Leather Sofa Seating & Mountain Heating',
+                    'Luggage Holding & Mountain Taxi Coordination'
+                  ]}
+                  photos={galleryPhotos['common/reception'] || []}
+                  isNight={isNight}
+                  onOpenManagePhotos={() => onOpenManagePhotos?.('common/reception')}
+                  onOpenLightbox={handleOpenCustomLightbox}
+                />
+
+                {/* 2. Dining Area */}
+                <CommonSpaceCard
+                  galleryId="common/dining"
+                  name="Dining Area & In-House Restaurant"
+                  badge="Sikkimese & Indian Cuisine"
+                  description="Authentic in-house Sikkimese organic specialty dining along with comforting North & South Indian meals, mountain tea, and fresh breakfast spread overlooking the valleys."
+                  highlights={[
+                    'Freshly Prepared Organic Sikkimese Delicacies',
+                    'Homestyle North & South Indian Thalis',
+                    'Hot Himalayan Spiced Tea & Filter Coffee',
+                    'Breakfast Included Options & Room Dining'
+                  ]}
+                  photos={galleryPhotos['common/dining'] || []}
+                  isNight={isNight}
+                  onOpenManagePhotos={() => onOpenManagePhotos?.('common/dining')}
+                  onOpenLightbox={handleOpenCustomLightbox}
+                />
+              </div>
+            </div>
+          </div>
         ) : (
-          /* Architectural Room Cards Grid (NO FAKE PHOTOS) */
+          /* Kalyani: Specialized Medical Suites */
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedRooms.map((room) => (
               <ArchitecturalRoomCard
@@ -1728,3 +1850,458 @@ const ArchitecturalRoomCard: React.FC<ArchitecturalRoomCardProps> = ({
     </div>
   );
 };
+
+/* -------------------------------------------------------------------------- */
+/* PERMANENT GALLERY COMPONENT (Shared by Rooms and Common Spaces)            */
+/* -------------------------------------------------------------------------- */
+
+interface PersistentImageGalleryProps {
+  galleryId: GalleryId;
+  photos: GalleryPhoto[];
+  onOpenManagePhotos: () => void;
+  onOpenLightbox: (photo: { url: string; title: string; caption?: string }) => void;
+  aspectRatioClass?: string;
+}
+
+const PersistentImageGallery: React.FC<PersistentImageGalleryProps> = ({
+  galleryId,
+  photos,
+  onOpenManagePhotos,
+  onOpenLightbox,
+  aspectRatioClass = 'aspect-16/10'
+}) => {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const config = GALLERY_PLACEHOLDERS[galleryId];
+
+  // If real photos exist, use them; otherwise use placeholder and additionalPlaceholders
+  const hasRealPhotos = photos && photos.length > 0;
+  const imageList = hasRealPhotos
+    ? photos.map((p) => ({ url: p.url, title: p.title, caption: p.caption || '' }))
+    : [
+        { url: config.placeholderUrl, title: config.name, caption: config.description },
+        ...(config.additionalPlaceholders || []).map((url, i) => ({
+          url,
+          title: `${config.name} (Angle ${i + 2})`,
+          caption: config.description
+        }))
+      ];
+
+  const safeIdx = Math.min(currentIdx, Math.max(0, imageList.length - 1));
+  const activeImage = imageList[safeIdx] || imageList[0];
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIdx((prev) => (prev + 1) % imageList.length);
+  };
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIdx((prev) => (prev - 1 + imageList.length) % imageList.length);
+  };
+
+  return (
+    <div className={`relative ${aspectRatioClass} overflow-hidden rounded-xl bg-slate-950 group select-none`}>
+      <img
+        src={activeImage.url}
+        alt={activeImage.title}
+        onClick={() => onOpenLightbox(activeImage)}
+        className="w-full h-full object-cover cursor-pointer group-hover:scale-103 transition-transform duration-500"
+      />
+
+      {/* Top Badges */}
+      <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
+        {hasRealPhotos ? (
+          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/90 text-white backdrop-blur-md flex items-center gap-1 shadow">
+            <CheckCircle2 className="w-2.5 h-2.5" />
+            <span>Real Photo ({safeIdx + 1}/{imageList.length})</span>
+          </span>
+        ) : (
+          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-950/85 text-amber-300 border border-amber-400/30 backdrop-blur-md flex items-center gap-1 shadow">
+            <Sparkles className="w-2.5 h-2.5" />
+            <span>Placeholder Preview ({safeIdx + 1}/{imageList.length})</span>
+          </span>
+        )}
+      </div>
+
+      {/* Manage Photos Icon Button on Hover */}
+      <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenManagePhotos();
+          }}
+          className="p-1.5 rounded-lg bg-slate-950/80 hover:bg-amber-400 hover:text-slate-950 text-white backdrop-blur-md border border-white/20 text-[11px] font-semibold transition-all cursor-pointer flex items-center gap-1 shadow"
+          title="Upload or change photos for this gallery"
+        >
+          <Camera className="w-3.5 h-3.5" />
+          <span className="text-[10px] hidden sm:inline">Manage</span>
+        </button>
+      </div>
+
+      {/* Prev / Next Arrows if multiple photos */}
+      {imageList.length > 1 && (
+        <>
+          <button
+            onClick={handlePrev}
+            aria-label="Previous photo"
+            className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-slate-950/70 hover:bg-amber-400 hover:text-slate-950 text-white transition-all cursor-pointer opacity-80 sm:opacity-0 group-hover:opacity-100 border border-white/20 z-10"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button
+            onClick={handleNext}
+            aria-label="Next photo"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-slate-950/70 hover:bg-amber-400 hover:text-slate-950 text-white transition-all cursor-pointer opacity-80 sm:opacity-0 group-hover:opacity-100 border border-white/20 z-10"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+
+          {/* Dot Indicators */}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 z-10 bg-slate-950/60 px-2 py-0.5 rounded-full backdrop-blur-sm">
+            {imageList.map((_, i) => (
+              <span
+                key={i}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentIdx(i);
+                }}
+                className={`w-1.5 h-1.5 rounded-full cursor-pointer transition-all ${
+                  i === safeIdx ? 'bg-amber-400 w-3' : 'bg-white/50 hover:bg-white'
+                }`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Bottom overlay title */}
+      <div
+        onClick={() => onOpenLightbox(activeImage)}
+        className="absolute inset-x-0 bottom-0 pt-6 pb-2 px-3 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent cursor-pointer flex items-end justify-between"
+      >
+        <span className="text-[11px] text-white font-medium truncate">
+          {activeImage.title}
+        </span>
+        <span className="text-[10px] text-amber-300 flex items-center gap-0.5 shrink-0 ml-2">
+          <Eye className="w-3 h-3" />
+          <span>Zoom</span>
+        </span>
+      </div>
+    </div>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/* TRIKUTA ROOM CARD (Gangtok: Only 2 Room Types - Window View is Only Difference) */
+/* -------------------------------------------------------------------------- */
+
+interface TrikutaRoomCardProps {
+  room: Room;
+  galleryId: 'rooms/view-room' | 'rooms/non-view-room';
+  photos: GalleryPhoto[];
+  isNight: boolean;
+  onReserve: () => void;
+  onOpenManagePhotos: () => void;
+  onOpenLightbox: (photo: { url: string; title: string; caption?: string }) => void;
+}
+
+const TrikutaRoomCard: React.FC<TrikutaRoomCardProps> = ({
+  room,
+  galleryId,
+  photos,
+  isNight,
+  onReserve,
+  onOpenManagePhotos,
+  onOpenLightbox
+}) => {
+  const isViewRoom = galleryId === 'rooms/view-room';
+
+  return (
+    <div
+      className={`rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between group border relative ${
+        isNight
+          ? 'bg-slate-900/90 border-slate-800 hover:border-slate-700 hover:shadow-xl'
+          : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm hover:shadow-xl'
+      }`}
+    >
+      <div>
+        {/* Photo Gallery Component on Top of Room Card */}
+        <div className="mb-4">
+          <PersistentImageGallery
+            galleryId={galleryId}
+            photos={photos}
+            onOpenManagePhotos={onOpenManagePhotos}
+            onOpenLightbox={onOpenLightbox}
+            aspectRatioClass="aspect-16/10"
+          />
+        </div>
+
+        {/* View Distinction Highlight (The ONLY difference between the two room types) */}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          {isViewRoom ? (
+            <span className="px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-amber-400 text-slate-950 flex items-center gap-1.5 shadow-sm">
+              <Mountain className="w-3.5 h-3.5 text-slate-950" />
+              <span>Hillside View</span>
+            </span>
+          ) : (
+            <span
+              className={`px-3 py-1 rounded-md text-xs font-medium uppercase tracking-wider border flex items-center gap-1.5 ${
+                isNight
+                  ? 'border-slate-700 text-slate-400 bg-slate-950/60'
+                  : 'border-slate-300 text-slate-600 bg-slate-100'
+              }`}
+            >
+              <Maximize2 className="w-3.5 h-3.5 text-slate-400" />
+              <span>Standard Window (No View)</span>
+            </span>
+          )}
+
+          <span className="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
+            <CheckCircle2 className="w-3 h-3" />
+            <span>Free Cancellation</span>
+          </span>
+        </div>
+
+        {/* Room Title & Tagline */}
+        <h4
+          className={`text-xl font-serif font-bold transition-colors ${
+            isNight
+              ? 'text-white group-hover:text-amber-300'
+              : 'text-slate-950 group-hover:text-amber-600'
+          }`}
+        >
+          {room.name}
+        </h4>
+
+        <p
+          className={`text-xs mt-1 leading-relaxed ${
+            isNight ? 'text-slate-400' : 'text-slate-600'
+          }`}
+        >
+          {room.tagline}
+        </p>
+
+        {/* Architectural Specs Strip (IDENTICAL on both room types) */}
+        <div
+          className={`mt-4 p-3 rounded-xl border flex items-center justify-between text-xs ${
+            isNight
+              ? 'bg-slate-950/70 border-slate-800 text-slate-300'
+              : 'bg-slate-50 border-slate-200 text-slate-700'
+          }`}
+        >
+          <div className="flex items-center gap-1.5">
+            <Maximize2 className="w-3.5 h-3.5 shrink-0 text-amber-500" />
+            <span className="font-mono font-bold">{room.sqft}</span>
+            <span className="text-[11px] text-slate-400">sq ft</span>
+          </div>
+
+          <div className="h-4 w-px bg-slate-700/50" />
+
+          <div className="flex items-center gap-1.5">
+            <Bed className="w-3.5 h-3.5 shrink-0 text-amber-500" />
+            <span className="text-[11px]">{room.bed}</span>
+          </div>
+
+          <div className="h-4 w-px bg-slate-700/50" />
+
+          <div className="flex items-center gap-1.5">
+            <Users className="w-3.5 h-3.5 shrink-0 text-amber-500" />
+            <span className="text-[11px]">{room.occupancy}</span>
+          </div>
+        </div>
+
+        {/* Shared Four Amenities Icon Row (IDENTICAL on both room types) */}
+        <div className="mt-5">
+          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2.5">
+            Included Room Amenities (Identical on both)
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div
+              className={`p-2.5 rounded-lg border flex items-center gap-2 text-xs ${
+                isNight
+                  ? 'bg-slate-950 text-slate-300 border-slate-800'
+                  : 'bg-slate-100 text-slate-700 border-slate-200'
+              }`}
+            >
+              <Flame className="w-4 h-4 text-amber-500 shrink-0" />
+              <span className="text-[11px] truncate font-medium">Water heater / geyser</span>
+            </div>
+
+            <div
+              className={`p-2.5 rounded-lg border flex items-center gap-2 text-xs ${
+                isNight
+                  ? 'bg-slate-950 text-slate-300 border-slate-800'
+                  : 'bg-slate-100 text-slate-700 border-slate-200'
+              }`}
+            >
+              <Tv className="w-4 h-4 text-amber-500 shrink-0" />
+              <span className="text-[11px] truncate font-medium">TV</span>
+            </div>
+
+            <div
+              className={`p-2.5 rounded-lg border flex items-center gap-2 text-xs ${
+                isNight
+                  ? 'bg-slate-950 text-slate-300 border-slate-800'
+                  : 'bg-slate-100 text-slate-700 border-slate-200'
+              }`}
+            >
+              <UtensilsCrossed className="w-4 h-4 text-amber-500 shrink-0" />
+              <span className="text-[11px] truncate font-medium">Mini table</span>
+            </div>
+
+            <div
+              className={`p-2.5 rounded-lg border flex items-center gap-2 text-xs ${
+                isNight
+                  ? 'bg-slate-950 text-slate-300 border-slate-800'
+                  : 'bg-slate-100 text-slate-700 border-slate-200'
+              }`}
+            >
+              <Wifi className="w-4 h-4 text-amber-500 shrink-0" />
+              <span className="text-[11px] truncate font-medium">WiFi</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Urgency Badge */}
+        {room.remainingRooms <= 3 && (
+          <div className="mt-4 text-[11px] font-semibold text-rose-400 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+            <span>Only {room.remainingRooms} rooms left at this tariff</span>
+          </div>
+        )}
+      </div>
+
+      {/* Pricing & CTA Footer */}
+      <div
+        className={`mt-6 pt-4 border-t flex items-center justify-between ${
+          isNight ? 'border-slate-800' : 'border-slate-200'
+        }`}
+      >
+        <div>
+          <div className="flex items-baseline gap-1.5">
+            <span
+              className={`text-2xl font-bold font-mono ${
+                isNight ? 'text-white' : 'text-slate-950'
+              }`}
+            >
+              ₹{room.pricePerNight}
+            </span>
+            <span className="text-xs text-slate-400 line-through font-mono">
+              ₹{room.originalPrice}
+            </span>
+          </div>
+          <span className={`text-[10px] block ${isNight ? 'text-slate-400' : 'text-slate-500'}`}>
+            + GST · Per Night
+          </span>
+        </div>
+
+        <button
+          onClick={onReserve}
+          className="px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-1.5 shadow transition-all active:scale-95 cursor-pointer text-slate-950 bg-gradient-to-r from-amber-400 to-amber-300 hover:from-amber-300 hover:to-amber-200"
+        >
+          <span>Reserve Room</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/* COMMON SPACE CARD (Reception Area & Dining Area)                          */
+/* -------------------------------------------------------------------------- */
+
+interface CommonSpaceCardProps {
+  galleryId: 'common/reception' | 'common/dining';
+  name: string;
+  badge: string;
+  description: string;
+  highlights: string[];
+  photos: GalleryPhoto[];
+  isNight: boolean;
+  onOpenManagePhotos: () => void;
+  onOpenLightbox: (photo: { url: string; title: string; caption?: string }) => void;
+}
+
+const CommonSpaceCard: React.FC<CommonSpaceCardProps> = ({
+  galleryId,
+  name,
+  badge,
+  description,
+  highlights,
+  photos,
+  isNight,
+  onOpenManagePhotos,
+  onOpenLightbox
+}) => {
+  return (
+    <div
+      className={`rounded-2xl p-6 transition-all duration-300 border flex flex-col justify-between ${
+        isNight
+          ? 'bg-slate-900/90 border-slate-800 hover:border-slate-700 shadow-sm hover:shadow-lg'
+          : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm hover:shadow-lg'
+      }`}
+    >
+      <div>
+        {/* Photo Gallery Component on Top */}
+        <div className="mb-4">
+          <PersistentImageGallery
+            galleryId={galleryId}
+            photos={photos}
+            onOpenManagePhotos={onOpenManagePhotos}
+            onOpenLightbox={onOpenLightbox}
+            aspectRatioClass="aspect-16/10"
+          />
+        </div>
+
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-400/15 text-amber-500 border border-amber-400/30">
+            {badge}
+          </span>
+          <span className="text-[11px] font-medium text-slate-400">
+            Shared Space · Open to all guests
+          </span>
+        </div>
+
+        <h4 className={`text-xl font-serif font-bold ${isNight ? 'text-white' : 'text-slate-950'}`}>
+          {name}
+        </h4>
+
+        <p className={`text-xs mt-1.5 leading-relaxed ${isNight ? 'text-slate-300' : 'text-slate-600'}`}>
+          {description}
+        </p>
+
+        {/* Feature Highlights */}
+        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
+          {highlights.map((item, idx) => (
+            <div key={idx} className="flex items-center gap-2 text-xs">
+              <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span className={isNight ? 'text-slate-300' : 'text-slate-700'}>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer explaining non-bookable shared space */}
+      <div
+        className={`mt-6 pt-4 border-t flex items-center justify-between text-xs ${
+          isNight ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-500'
+        }`}
+      >
+        <div className="flex items-center gap-1.5 text-[11px]">
+          <Compass className="w-3.5 h-3.5 text-amber-500" />
+          <span>Complimentary property amenity with all stays</span>
+        </div>
+
+        <button
+          onClick={onOpenManagePhotos}
+          className="text-amber-500 hover:underline flex items-center gap-1 text-[11px] font-semibold cursor-pointer"
+        >
+          <Camera className="w-3 h-3" />
+          <span>Manage Area Photos</span>
+        </button>
+      </div>
+    </div>
+  );
+};
+

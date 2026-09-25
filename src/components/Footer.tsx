@@ -13,23 +13,46 @@ import {
 } from 'lucide-react';
 import { PROPERTIES } from '../data/hotels';
 import { useTheme } from '../context/ThemeContext';
+import { saveCustomerInquiryToDb } from '../services/dbService';
+import { ParijaiLogo } from './ParijaiLogo';
 
 interface FooterProps {
   onBookNow: () => void;
   onSelectProperty: (prop: 'gangtok' | 'kalyani') => void;
+  onOpenDatabaseRecords?: () => void;
+  onOpenManagePhotos?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onBookNow, onSelectProperty }) => {
+export const Footer: React.FC<FooterProps> = ({
+  onBookNow,
+  onSelectProperty,
+  onOpenDatabaseRecords,
+  onOpenManagePhotos
+}) => {
   const [newsletterInput, setNewsletterInput] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [showTariffModal, setShowTariffModal] = useState(false);
   const { isNight } = useTheme();
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newsletterInput.trim()) {
+      const contactVal = newsletterInput.trim();
       setSubscribed(true);
       setNewsletterInput('');
+      try {
+        await saveCustomerInquiryToDb({
+          name: 'Subscriber',
+          phone: contactVal.includes('@') ? '' : contactVal,
+          email: contactVal.includes('@') ? contactVal : '',
+          propertyId: 'general',
+          subject: 'Newsletter & Seasonal Rate Advisory Subscription',
+          message: `User subscribed with contact: ${contactVal}`,
+          source: 'newsletter'
+        });
+      } catch (err) {
+        console.warn('Failed to save newsletter contact to DB:', err);
+      }
     }
   };
 
@@ -128,9 +151,19 @@ export const Footer: React.FC<FooterProps> = ({ onBookNow, onSelectProperty }) =
 
           {/* Quick Links & Newsletter */}
           <div className="py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="md:col-span-1">
-              <span className="text-xl font-serif font-bold text-white">Parijai Group</span>
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+            <div className="md:col-span-1 space-y-3">
+              <div className="flex items-center gap-3">
+                <ParijaiLogo size={46} />
+                <div className="flex flex-col">
+                  <span className="text-base sm:text-lg font-serif font-bold text-white tracking-wide">
+                    Parijai Group of Hotels
+                  </span>
+                  <span className="text-[10px] uppercase tracking-wider text-emerald-400 font-semibold">
+                    Hospitality & Care
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
                 Hospitality engineered for serenity in Sikkim and caring medical convenience in Kalyani.
               </p>
               <div className="mt-4 flex items-center gap-2 text-xs text-emerald-400">
@@ -169,6 +202,28 @@ export const Footer: React.FC<FooterProps> = ({ onBookNow, onSelectProperty }) =
                     Guest Testimonials
                   </a>
                 </li>
+                {onOpenDatabaseRecords && (
+                  <li>
+                    <button
+                      onClick={onOpenDatabaseRecords}
+                      className="text-amber-400 hover:text-amber-300 font-semibold cursor-pointer flex items-center gap-1"
+                    >
+                      <span>Cloud Database & Records</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300">Live</span>
+                    </button>
+                  </li>
+                )}
+                {onOpenManagePhotos && (
+                  <li>
+                    <button
+                      onClick={onOpenManagePhotos}
+                      className="text-emerald-400 hover:text-emerald-300 font-semibold cursor-pointer flex items-center gap-1"
+                    >
+                      <span>Manage Photos (Owner)</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-400/20 text-emerald-300">Admin</span>
+                    </button>
+                  </li>
+                )}
               </ul>
             </div>
 
@@ -213,7 +268,7 @@ export const Footer: React.FC<FooterProps> = ({ onBookNow, onSelectProperty }) =
               </p>
               {subscribed ? (
                 <div className="p-2.5 rounded-lg bg-emerald-950/60 border border-emerald-800 text-xs text-emerald-300">
-                  ✓ Thank you! You're subscribed to Parijai Group direct updates.
+                  ✓ Thank you! You're subscribed to Parijai Group of Hotels direct updates.
                 </div>
               ) : (
                 <form onSubmit={handleSubscribe} className="flex gap-2">
@@ -237,7 +292,7 @@ export const Footer: React.FC<FooterProps> = ({ onBookNow, onSelectProperty }) =
           </div>
 
           <div className="pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-            <div>© {new Date().getFullYear()} Parijai Group of Hotels & Residencies. All rights reserved.</div>
+            <div>© {new Date().getFullYear()} Parijai Group of Hotels. All rights reserved.</div>
             <div className="flex gap-4">
               <span>Privacy Policy</span>
               <span>·</span>
@@ -269,7 +324,7 @@ export const Footer: React.FC<FooterProps> = ({ onBookNow, onSelectProperty }) =
           </a>
 
           <a
-            href="https://wa.me/919163008361?text=Hello%20Parijai%20Group,%20I%20would%20like%20to%20inquire%20about%20room%20availability."
+            href="https://wa.me/919163008361?text=Hello%20Parijai%20Group%20of%20Hotels,%20I%20would%20like%20to%20inquire%20about%20room%20availability."
             target="_blank"
             rel="noreferrer"
             className={`flex flex-col items-center justify-center py-2 rounded-xl border transition-colors ${
@@ -306,7 +361,7 @@ export const Footer: React.FC<FooterProps> = ({ onBookNow, onSelectProperty }) =
               }`}
             >
               <h4 className={`text-base font-serif font-bold ${isNight ? 'text-white' : 'text-slate-950'}`}>
-                Official Parijai Group Tariff Card
+                Official Parijai Group of Hotels Tariff Card
               </h4>
               <button
                 onClick={() => setShowTariffModal(false)}

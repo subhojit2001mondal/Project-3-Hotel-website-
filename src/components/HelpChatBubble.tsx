@@ -84,7 +84,7 @@ export const HelpChatBubble: React.FC<HelpChatBubbleProps> = ({ onSelectProperty
             </button>
 
             <a
-              href="https://wa.me/919163008361?text=Hello%20Parijai%20Group,%20I%20need%20quick%20help%20with%20booking%20and%20tariffs."
+              href="https://wa.me/919163008361?text=Hello%20Parijai%20Group%20of%20Hotels,%20I%20need%20quick%20help%20with%20booking%20and%20tariffs."
               target="_blank"
               rel="noreferrer"
               className={`w-full text-left p-2.5 rounded-xl border flex items-center justify-between transition-colors block ${

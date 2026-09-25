@@ -1,7 +1,16 @@
 /**
- * Persistent high-capacity photo storage utility using IndexedDB + Canvas compression.
- * Avoids localStorage 5MB quota errors when uploading high-resolution phone/camera photos.
+ * Unified photo storage utility combining Firestore Cloud Database with local IndexedDB cache.
+ * High-resolution phone/camera photos are compressed and persisted to Cloud Firestore
+ * so they are saved across devices, reloads, and visitors.
  */
+
+import {
+  DatabasePhoto,
+  savePhotosToDb,
+  deletePhotoFromDb,
+  getPhotosFromDb,
+  subscribeToPhotos
+} from '../services/dbService';
 
 const DB_NAME = 'parijai_hospitality_db';
 const DB_VERSION = 2;
@@ -15,6 +24,7 @@ export interface StoredPhoto {
   caption?: string;
   tag?: string;
   addedAt: number;
+  propertyId?: 'gangtok' | 'kalyani';
 }
 
 function getStoreName(property: 'gangtok' | 'kalyani' = 'gangtok'): string {
@@ -41,36 +51,72 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
+/**
+ * Get stored photos: checks Firestore first, merges with local IndexedDB
+ */
 export async function getStoredPhotos(property: 'gangtok' | 'kalyani' = 'gangtok'): Promise<StoredPhoto[]> {
   try {
-    const db = await openDB();
-    const storeName = getStoreName(property);
-    return new Promise((resolve) => {
-      if (!db.objectStoreNames.contains(storeName)) {
-        resolve([]);
-        return;
-      }
-      const tx = db.transaction(storeName, 'readonly');
-      const store = tx.objectStore(storeName);
-      const req = store.getAll();
-      req.onsuccess = () => {
-        const result = (req.result as StoredPhoto[]) || [];
-        // Sort by newest added first
-        result.sort((a, b) => b.addedAt - a.addedAt);
-        resolve(result);
-      };
-      req.onerror = () => resolve([]);
-    });
+    // 1. Fetch from Firestore Cloud Database
+    const cloudPhotos = await getPhotosFromDb(property);
+
+    // 2. Fetch from IndexedDB for local offline fallback
+    let localPhotos: StoredPhoto[] = [];
+    try {
+      const db = await openDB();
+      const storeName = getStoreName(property);
+      localPhotos = await new Promise((resolve) => {
+        if (!db.objectStoreNames.contains(storeName)) {
+          resolve([]);
+          return;
+        }
+        const tx = db.transaction(storeName, 'readonly');
+        const store = tx.objectStore(storeName);
+        const req = store.getAll();
+        req.onsuccess = () => resolve((req.result as StoredPhoto[]) || []);
+        req.onerror = () => resolve([]);
+      });
+    } catch {
+      // indexedDB failed, ignore
+    }
+
+    // Merge by ID giving cloud priority
+    const map = new Map<string, StoredPhoto>();
+    localPhotos.forEach((p) => map.set(p.id, p));
+    cloudPhotos.forEach((p) => map.set(p.id, { ...p, propertyId: property }));
+
+    const merged = Array.from(map.values());
+    merged.sort((a, b) => b.addedAt - a.addedAt);
+    return merged;
   } catch (err) {
-    console.warn('IndexedDB not available, returning empty list', err);
+    console.warn('Failed to load photos from DB', err);
     return [];
   }
 }
 
+/**
+ * Save photos to both Firestore Database and IndexedDB
+ */
 export async function savePhotosToStorage(
   photos: StoredPhoto[],
   property: 'gangtok' | 'kalyani' = 'gangtok'
 ): Promise<void> {
+  // 1. Save to Firestore
+  try {
+    const dbPhotos: DatabasePhoto[] = photos.map((p) => ({
+      id: p.id,
+      propertyId: property,
+      url: p.url,
+      title: p.title,
+      caption: p.caption,
+      tag: p.tag,
+      addedAt: p.addedAt || Date.now()
+    }));
+    await savePhotosToDb(dbPhotos);
+  } catch (cloudErr) {
+    console.warn('Could not save to Firestore, saving to local store:', cloudErr);
+  }
+
+  // 2. Save to local IndexedDB
   try {
     const db = await openDB();
     const storeName = getStoreName(property);
@@ -90,10 +136,21 @@ export async function savePhotosToStorage(
   }
 }
 
+/**
+ * Delete photo from both Firestore and IndexedDB
+ */
 export async function deletePhotoFromStorage(
   id: string,
   property: 'gangtok' | 'kalyani' = 'gangtok'
 ): Promise<void> {
+  // 1. Delete from Firestore
+  try {
+    await deletePhotoFromDb(id);
+  } catch (err) {
+    console.warn('Could not delete from Firestore:', err);
+  }
+
+  // 2. Delete from IndexedDB
   try {
     const db = await openDB();
     const storeName = getStoreName(property);
@@ -172,10 +229,10 @@ export async function clearAllPhotosFromStorage(
 }
 
 /**
- * Resizes and compresses an image file to max 1600px width/height and JPEG 0.85.
- * Shrinks 10-15MB camera photos to ~250KB while retaining crisp retina quality.
+ * Resizes and compresses an image file to max 1280px width/height and JPEG 0.78.
+ * Ensures the data URL payload is compact (~100-200KB) for fast Firestore document persistence.
  */
-export function compressImageFile(file: File, maxDim = 1600, quality = 0.85): Promise<string> {
+export function compressImageFile(file: File, maxDim = 1280, quality = 0.78): Promise<string> {
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = (e) => {

@@ -59,6 +59,34 @@ export interface BookingAddOn {
   recommendedFor: 'leisure' | 'medical' | 'corporate';
 }
 
+export interface BookingConfirmationSummary {
+  bookingRef: string;
+  propertyId: 'gangtok' | 'kalyani';
+  propertyName: string;
+  propertyLocation: string;
+  propertyPhone: string;
+  propertyWhatsapp: string;
+  roomId: string;
+  roomName: string;
+  guestName: string;
+  guestPhone: string;
+  guestEmail?: string;
+  checkInDate: string;
+  checkOutDate: string;
+  nights: number;
+  adults: number;
+  childrenCount: number;
+  purpose: 'leisure' | 'medical' | 'corporate';
+  selectedAddOns: { name: string; price: number }[];
+  baseTariff: number;
+  addOnsTotal: number;
+  gst: number;
+  grandTotal: number;
+  paymentMethod: string;
+  specialNeeds?: string;
+  createdAt: string;
+}
+
 export const PROPERTIES: Record<'gangtok' | 'kalyani', Property> = {
   gangtok: {
     id: 'gangtok',
@@ -71,7 +99,7 @@ export const PROPERTIES: Record<'gangtok' | 'kalyani', Property> = {
     rating: 4.7,
     reviewCount: 382,
     tripAdvisorRating: 4.6,
-    startingPrice: 2850,
+    startingPrice: 2250,
     vibe: 'Serene Himalayan mountain retreat, valley views & cozy timber aesthetics',
     description: 'Perched in the tranquil hill slopes of Gangtok near District Court, Trikuta Residency offers pristine views of the Kanchenjunga range, cedar-insulated rooms with electric bed warmers, authentic Sikkimese & Indian cuisine, and seamless tour permits desk.',
     image: '',
@@ -133,54 +161,48 @@ export const PROPERTIES: Record<'gangtok' | 'kalyani', Property> = {
 };
 
 export const ROOMS: Room[] = [
-  // Gangtok Rooms
+  // Gangtok Rooms (Exactly Two Room Types - Window View is the Sole Difference)
   {
-    id: 'g-deluxe-valley',
+    id: 'g-view-deluxe',
     propertyId: 'gangtok',
-    name: 'Deluxe Valley View Room',
-    tagline: 'Private balcony facing verdant Himalayan valleys',
-    sqft: 280,
+    name: 'View Room (Deluxe)',
+    tagline: 'Window faces the hillside, with a view of the Kanchenjunga range and valley.',
+    sqft: 260,
     bed: '1 King Bed',
     occupancy: '2 Adults, 1 Child',
     pricePerNight: 2850,
-    originalPrice: 3500,
-    remainingRooms: 2,
-    freeCancellation: true,
-    images: [],
-    amenities: ['Balcony with View', 'Electric Bed Warmer', 'Free High-speed Wi-Fi', 'Geyser Hot Shower', 'Tea/Coffee Maker'],
-    purposeTags: ['leisure']
-  },
-  {
-    id: 'g-mountain-suite',
-    propertyId: 'gangtok',
-    name: 'Mountain Executive Suite',
-    tagline: 'Panoramic Kanchenjunga vista with cozy pine lounge',
-    sqft: 410,
-    bed: '1 Super King + Day Bed',
-    occupancy: '3 Adults',
-    pricePerNight: 3950,
-    originalPrice: 4800,
+    originalPrice: 3450,
     remainingRooms: 3,
     freeCancellation: true,
     images: [],
-    amenities: ['Full Mountain Panorama', 'Living Area', 'Dual Bed Warmers', 'Smart TV with OTT', 'Complimentary Breakfast'],
+    amenities: [
+      'Water heater / geyser (hot water)',
+      'TV',
+      'Mini table',
+      'WiFi'
+    ],
     purposeTags: ['leisure', 'corporate']
   },
   {
-    id: 'g-attic-family',
+    id: 'g-non-view-regular',
     propertyId: 'gangtok',
-    name: 'Attic Himalayan Family Suite',
-    tagline: 'Spacious wooden chalet attic ideal for families & groups',
-    sqft: 520,
-    bed: '2 King Beds',
-    occupancy: '4 Adults, 2 Children',
-    pricePerNight: 5200,
-    originalPrice: 6500,
-    remainingRooms: 1,
+    name: 'Non-View Room (Regular)',
+    tagline: 'Standard window, cozy wooden comfort without hillside view.',
+    sqft: 260,
+    bed: '1 King Bed',
+    occupancy: '2 Adults, 1 Child',
+    pricePerNight: 2250,
+    originalPrice: 2750,
+    remainingRooms: 4,
     freeCancellation: true,
     images: [],
-    amenities: ['Dual Balconies', 'Wooden Loft Ceiling', '2 Attached Bathrooms', 'Heater included', 'Free Room Service'],
-    purposeTags: ['leisure']
+    amenities: [
+      'Water heater / geyser (hot water)',
+      'TV',
+      'Mini table',
+      'WiFi'
+    ],
+    purposeTags: ['leisure', 'corporate']
   },
 
   // Kalyani Rooms

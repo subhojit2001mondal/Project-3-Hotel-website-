@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { Navbar } from './components/Navbar';
 import { HeroBookingBar } from './components/HeroBookingBar';
@@ -13,13 +13,61 @@ import { LocalGuidesAndTrust } from './components/LocalGuidesAndTrust';
 import { Footer } from './components/Footer';
 import { BookingFunnelModal } from './components/BookingFunnelModal';
 import { HelpChatBubble } from './components/HelpChatBubble';
-import { Room, ROOMS } from './data/hotels';
+import { DatabaseRecordsModal } from './components/DatabaseRecordsModal';
+import { ManagePhotosModal } from './components/ManagePhotosModal';
+import { BookingSuccessModal } from './components/BookingSuccessModal';
+import { BookingSuccessToast } from './components/BookingSuccessToast';
+import { InteractiveMapSection } from './components/InteractiveMapSection';
+import { Room, ROOMS, BookingConfirmationSummary } from './data/hotels';
+import {
+  GalleryId,
+  GalleryPhoto,
+  subscribeToGalleryPhotos
+} from './services/dbService';
 
 function MainAppContent() {
   const { isNight } = useTheme();
 
   // Global booking state
   const [selectedProperty, setSelectedProperty] = useState<'gangtok' | 'kalyani'>('gangtok');
+
+  // Database Records modal state
+  const [isDatabaseModalOpen, setIsDatabaseModalOpen] = useState<boolean>(false);
+
+  // Manage Photos modal state & gallery selection
+  const [isManagePhotosOpen, setIsManagePhotosOpen] = useState<boolean>(false);
+  const [selectedManageGallery, setSelectedManageGallery] = useState<GalleryId>('rooms/view-room');
+
+  // Booking confirmation success modal and floating toast state
+  const [bookingSuccessSummary, setBookingSuccessSummary] = useState<BookingConfirmationSummary | null>(null);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState<boolean>(false);
+  const [showSuccessToast, setShowSuccessToast] = useState<boolean>(false);
+
+  // Real-time persistent gallery photos from Firestore
+  const [galleryPhotos, setGalleryPhotos] = useState<Record<GalleryId, GalleryPhoto[]>>({
+    'rooms/view-room': [],
+    'rooms/non-view-room': [],
+    'common/reception': [],
+    'common/dining': []
+  });
+
+  // Subscribe to real-time changes across the 4 galleries
+  useEffect(() => {
+    const unsub = subscribeToGalleryPhotos((data) => {
+      setGalleryPhotos(data);
+    });
+    return () => unsub();
+  }, []);
+
+  const handleOpenManagePhotos = (galleryId: GalleryId = 'rooms/view-room') => {
+    setSelectedManageGallery(galleryId);
+    setIsManagePhotosOpen(true);
+  };
+
+  const handleBookingCompleted = (summary: BookingConfirmationSummary) => {
+    setBookingSuccessSummary(summary);
+    setShowSuccessToast(true);
+  };
 
   // Format standard date defaults
   const today = new Date();
@@ -83,6 +131,8 @@ function MainAppContent() {
       <Navbar
         onBookClick={handleBookNowCTA}
         onSelectProperty={handleSelectProperty}
+        onOpenDatabaseRecords={() => setIsDatabaseModalOpen(true)}
+        onOpenManagePhotos={() => handleOpenManagePhotos('rooms/view-room')}
       />
 
       {/* Main Content Landmark */}
@@ -117,7 +167,12 @@ function MainAppContent() {
           purpose={purpose}
           onReserveRoom={(room) => setActiveBookingRoom(room)}
           isLoading={isLoadingAvailability}
+          galleryPhotos={galleryPhotos}
+          onOpenManagePhotos={handleOpenManagePhotos}
         />
+
+        {/* Interactive Landmark Map & Distance Section */}
+        <InteractiveMapSection initialProperty={selectedProperty} />
 
         {/* Local Guides, Testimonials, Policies, & FAQs */}
         <LocalGuidesAndTrust />
@@ -127,6 +182,23 @@ function MainAppContent() {
       <Footer
         onBookNow={handleBookNowCTA}
         onSelectProperty={handleSelectProperty}
+        onOpenDatabaseRecords={() => setIsDatabaseModalOpen(true)}
+        onOpenManagePhotos={() => handleOpenManagePhotos('rooms/view-room')}
+      />
+
+      {/* Cloud Firestore Database Records & Customer Input Modal */}
+      <DatabaseRecordsModal
+        isOpen={isDatabaseModalOpen}
+        onClose={() => setIsDatabaseModalOpen(false)}
+        onSelectProperty={handleSelectProperty}
+      />
+
+      {/* Persistent Cloud Photo Manager Modal */}
+      <ManagePhotosModal
+        isOpen={isManagePhotosOpen}
+        onClose={() => setIsManagePhotosOpen(false)}
+        galleryPhotos={galleryPhotos}
+        initialGallery={selectedManageGallery}
       />
 
       {/* Multi-Step Booking Funnel Modal */}
@@ -138,8 +210,30 @@ function MainAppContent() {
           adults={adults}
           childrenCount={childrenCount}
           purpose={purpose}
-          onClose={() => setActiveBookingRoom(null)}
-          onSuccess={() => {}}
+          onClose={() => {
+            setActiveBookingRoom(null);
+            if (bookingSuccessSummary) {
+              setIsSuccessModalOpen(true);
+            }
+          }}
+          onSuccess={handleBookingCompleted}
+        />
+      )}
+
+      {/* Official Booking Success & Summary Voucher Modal */}
+      <BookingSuccessModal
+        summary={bookingSuccessSummary}
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+        onOpenDatabase={() => setIsDatabaseModalOpen(true)}
+      />
+
+      {/* Floating Success Toast Notification with Reference Number & Quick Actions */}
+      {showSuccessToast && (
+        <BookingSuccessToast
+          summary={bookingSuccessSummary}
+          onOpenSummaryModal={() => setIsSuccessModalOpen(true)}
+          onDismiss={() => setShowSuccessToast(false)}
         />
       )}
 
