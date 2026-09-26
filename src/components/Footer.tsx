@@ -155,11 +155,13 @@ export const Footer: React.FC<FooterProps> = ({
               <div className="flex items-center gap-3">
                 <ParijaiLogo size={46} />
                 <div className="flex flex-col">
-                  <span className="text-base sm:text-lg font-serif font-bold text-white tracking-wide">
-                    Parijai Group of Hotels
-                  </span>
-                  <span className="text-[10px] uppercase tracking-wider text-emerald-400 font-semibold">
-                    Hospitality & Care
+                  <div className="flex items-center gap-1.5 flex-nowrap">
+                    <span className="font-brand-cinzel text-base sm:text-lg font-bold tracking-[0.08em] uppercase text-luxury-gold">
+                      PARIJAI GROUP OF HOTELS
+                    </span>
+                  </div>
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-amber-300/80 font-semibold font-sans mt-0.5">
+                    Sikkim & Bengal · Gangtok & Kalyani
                   </span>
                 </div>
               </div>

@@ -38,11 +38,13 @@ export const ParijaiLogo: React.FC<ParijaiLogoProps> = ({
       {/* Optional Wordmark Text Alongside Logo */}
       {showWordmark && (
         <div className={`flex flex-col ${wordmarkClassName}`}>
-          <span className="font-serif text-lg sm:text-xl font-bold tracking-[0.14em] uppercase text-white group-hover:text-amber-300 transition-colors">
-            Parijai Group of Hotels
-          </span>
-          <span className="text-[9px] tracking-[0.22em] uppercase font-sans font-medium text-emerald-400/90">
-            Sikkim & Bengal · Heritage & Care
+          <div className="flex items-center gap-1.5 flex-nowrap">
+            <span className="font-brand-cinzel text-lg sm:text-xl font-bold tracking-[0.08em] uppercase text-luxury-gold">
+              PARIJAI GROUP OF HOTELS
+            </span>
+          </div>
+          <span className="text-[9px] tracking-[0.2em] uppercase font-sans font-semibold text-amber-200/90">
+            Sikkim & Bengal · Gangtok & Kalyani
           </span>
         </div>
       )}

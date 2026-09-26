@@ -125,21 +125,35 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* BRAND LOGO / WORDMARK */}
             <a
               href="#top"
-              className="group flex items-center gap-1.5 sm:gap-2.5 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-lg select-none min-w-0"
+              className="group flex items-center gap-2 sm:gap-3 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-lg select-none min-w-0"
+              aria-label="Parijai Group of Hotels - Home"
             >
               {/* Official Deep Green & Gold Circular Medallion Logo */}
-              <div className="shrink-0">
-                <ParijaiLogo size={36} className="sm:w-[42px] sm:h-[42px]" />
+              <div className="shrink-0 relative">
+                <ParijaiLogo size={38} className="sm:w-[44px] sm:h-[44px]" />
+                <div className="absolute inset-0 rounded-full ring-1 ring-amber-400/40 pointer-events-none" />
               </div>
 
-              <div className="flex flex-col min-w-0">
-                <span className="font-serif text-xs sm:text-base md:text-lg lg:text-xl font-bold tracking-[0.05em] sm:tracking-[0.1em] uppercase text-white group-hover:text-amber-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] transition-colors duration-200 truncate">
-                  Parijai Group
-                  <span className="hidden sm:inline"> of Hotels</span>
-                </span>
-                <span className="text-[8px] sm:text-[9px] tracking-[0.15em] sm:tracking-[0.2em] uppercase font-sans font-semibold text-emerald-400 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)] hidden lg:block">
-                  Sikkim & Bengal · Trikuta & Parijaye
-                </span>
+              {/* Complete Brand Typography with Luxury Metallic Gold Foil Texture */}
+              <div className="flex flex-col min-w-0 justify-center">
+                <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap">
+                  <span className="font-brand-cinzel text-[12px] xs:text-[14px] sm:text-[16px] md:text-lg lg:text-xl font-bold tracking-[0.06em] sm:tracking-[0.08em] uppercase text-luxury-gold whitespace-nowrap transition-transform duration-300 group-hover:brightness-110">
+                    PARIJAI GROUP
+                  </span>
+                  <span className="font-brand-cinzel text-[12px] xs:text-[14px] sm:text-[16px] md:text-lg lg:text-xl font-bold tracking-[0.06em] sm:tracking-[0.08em] uppercase text-luxury-gold whitespace-nowrap transition-transform duration-300 group-hover:brightness-110">
+                    OF HOTELS
+                  </span>
+                </div>
+
+                {/* Regional Heritage Badge: High-contrast warm gold & ivory with dark frosted backing for 100% readability */}
+                <div className="flex items-center gap-1 mt-0.5">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm bg-black/60 backdrop-blur-sm border border-amber-400/25 text-[7px] xs:text-[7.5px] sm:text-[8.5px] font-sans font-semibold tracking-[0.16em] sm:tracking-[0.2em] uppercase text-amber-100/90">
+                    <span className="w-1 h-1 rounded-full bg-amber-400 inline-block shrink-0" />
+                    <span>Sikkim & Bengal</span>
+                    <span className="text-amber-400/60">·</span>
+                    <span className="text-amber-200/90">Gangtok & Kalyani</span>
+                  </span>
+                </div>
               </div>
             </a>
 
@@ -463,7 +477,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <div className="py-2 px-1">
                         <div className="text-[11px] font-bold text-white px-3 mb-2 flex items-center justify-between">
                           <span>Trips & Stays</span>
-                          <span className="text-[9px] uppercase tracking-wider text-amber-400 font-semibold">Parijai</span>
+                          <span className="text-[9px] uppercase tracking-wider text-amber-400 font-semibold">Parijai Group of Hotels</span>
                         </div>
 
                         <button
