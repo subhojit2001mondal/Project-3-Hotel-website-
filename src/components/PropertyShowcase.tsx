@@ -7,6 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  Star,
   ShieldCheck,
   Flame,
   Mountain,
@@ -39,7 +40,8 @@ import {
   Database,
   Tv,
   Wifi,
-  Camera
+  Camera,
+  Building
 } from 'lucide-react';
 import { PROPERTIES, ROOMS, Room } from '../data/hotels';
 import { useTheme } from '../context/ThemeContext';
@@ -134,6 +136,78 @@ export const PARIJAYE_VERIFIED_SPACES = [
 ];
 
 // Verified Spaces for Trikuta Residency (Gangtok)
+
+// Curated high-res showcase photos for the hotel header gallery (matching Lemon Tree 5-photo grid UI design)
+const HOTEL_SHOWCASE_PHOTOS: Record<
+  "gangtok" | "kalyani",
+  { id: string; url: string; title: string; category: string }[]
+> = {
+  gangtok: [
+    {
+      id: "gt-1",
+      url: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1400&q=85",
+      title: "Trikuta Residency — Hillside Facade & Mountain Entrance",
+      category: "Exterior & Facade"
+    },
+    {
+      id: "gt-2",
+      url: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=85",
+      title: "Reception Lobby & Warm Guest Seating Lounge",
+      category: "Lobby"
+    },
+    {
+      id: "gt-3",
+      url: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=85",
+      title: "Deluxe Bedroom with Scenic Himalayan Valley Window",
+      category: "Guest Room"
+    },
+    {
+      id: "gt-4",
+      url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=85",
+      title: "In-House Sikkimese & Indian Dining Restaurant",
+      category: "Dining"
+    },
+    {
+      id: "gt-5",
+      url: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=85",
+      title: "Concierge & Mountain Permit Help Desk",
+      category: "Front Desk"
+    }
+  ],
+  kalyani: [
+    {
+      id: "ky-1",
+      url: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=85",
+      title: "Hotel Parijaye — Executive Healthcare-Adjacent Hotel Facade",
+      category: "Exterior & Entrance"
+    },
+    {
+      id: "ky-2",
+      url: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=800&q=85",
+      title: "Sanitized Executive Suite with Bedding & Seating",
+      category: "Suites"
+    },
+    {
+      id: "ky-3",
+      url: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=85",
+      title: "24/7 Front Desk, Prescription Support & Medical Assistance",
+      category: "Reception"
+    },
+    {
+      id: "ky-4",
+      url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=85",
+      title: "Sanitized In-House Kitchen & Attendant Dining",
+      category: "Diet Dining"
+    },
+    {
+      id: "ky-5",
+      url: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=85",
+      title: "Sanitized Attached Bath with 24/7 Hot Water Geyser",
+      category: "Bath & Hygiene"
+    }
+  ]
+};
+
 export const TRIKUTA_VERIFIED_SPACES = [
   {
     id: 'trikuta-exterior',
@@ -544,779 +618,291 @@ export const PropertyShowcase: React.FC<PropertyShowcaseProps> = ({
           </div>
         </div>
 
-        {/* 1. Property Feature Banner */}
-        <div
-          className={`mt-8 rounded-2xl p-6 sm:p-8 relative overflow-hidden border transition-colors shadow-sm ${
-            isNight ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900 shadow-md'
-          }`}
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-7">
+        {/* 1. LEMON-TREE STYLE HOTEL HEADER & 5-PHOTO MOSAIC GALLERY */}
+        <div className="mt-8">
+          {/* Header Bar: Hotel Logo/Icon, Title, Address, and Verified Ratings Badges */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-200 dark:border-slate-800">
+            <div className="flex items-start sm:items-center gap-3.5">
+              {/* Hotel Brand Emblem */}
               <div
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs mb-3 font-medium ${
-                  activeTab === 'gangtok'
-                    ? isNight
-                      ? 'bg-slate-800 text-amber-300'
-                      : 'bg-amber-50 text-amber-900 border border-amber-200'
-                    : isNight
-                    ? 'bg-slate-800 text-emerald-300'
-                    : 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-md border ${
+                  activeTab === "gangtok"
+                    ? "bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 border-amber-300"
+                    : "bg-gradient-to-br from-emerald-500 to-teal-700 text-white border-emerald-300"
                 }`}
               >
-                <span>{property.location}</span>
-                <span>·</span>
-                <span>{property.distanceToLandmark}</span>
+                {activeTab === "gangtok" ? (
+                  <Mountain className="w-7 h-7" />
+                ) : (
+                  <Building className="w-7 h-7" />
+                )}
               </div>
-              <h3
-                className={`text-2xl sm:text-3xl font-serif font-bold ${
-                  isNight ? 'text-white' : 'text-slate-950'
-                }`}
-              >
-                {property.name}
-              </h3>
 
-              <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3
+                    className={`text-2xl sm:text-3xl font-serif font-bold tracking-tight ${
+                      isNight ? "text-white" : "text-slate-900"
+                    }`}
+                  >
+                    {property.name}
+                  </h3>
+                  <span
+                    className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
+                      activeTab === "gangtok"
+                        ? "bg-amber-400/15 text-amber-500 border-amber-400/30"
+                        : "bg-emerald-500/15 text-emerald-500 border-emerald-500/30"
+                    }`}
+                  >
+                    {activeTab === "gangtok" ? "Gangtok, Sikkim" : "AIIMS Kalyani"}
+                  </span>
+                </div>
+
                 <a
                   href={property.mapUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className={`inline-flex items-center gap-1 text-xs font-medium hover:underline transition-colors ${
-                    activeTab === 'gangtok'
-                      ? 'text-amber-500 hover:text-amber-400'
-                      : 'text-emerald-500 hover:text-emerald-400'
-                  }`}
-                  title="Click to view verified pin on Google Maps"
+                  className="mt-1 inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors"
+                  title="View Google Maps Location"
                 >
                   <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" />
                   <span>{property.address}</span>
-                  <ExternalLink className="w-3 h-3 opacity-70" />
-                </a>
-              </div>
-
-              <p
-                className={`mt-2 text-sm leading-relaxed ${
-                  isNight ? 'text-slate-300' : 'text-slate-700'
-                }`}
-              >
-                {property.description}
-              </p>
-
-              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {property.keyAmenities.map((amenity, idx) => (
-                  <div key={idx} className="flex items-start gap-2.5 text-xs">
-                    <CheckCircle2
-                      className={`w-4 h-4 shrink-0 mt-0.5 ${
-                        activeTab === 'gangtok' ? 'text-amber-500' : 'text-emerald-500'
-                      }`}
-                    />
-                    <div>
-                      <span className={`font-semibold block ${isNight ? 'text-white' : 'text-slate-900'}`}>
-                        {amenity.name}
-                      </span>
-                      <span className={`text-[11px] ${isNight ? 'text-slate-400' : 'text-slate-500'}`}>
-                        {amenity.description}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Action Buttons: Google Maps, Call, WhatsApp & Photos */}
-              <div className="mt-6 flex flex-wrap items-center gap-2.5">
-                <a
-                  href={property.mapUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border transition-all ${
-                    activeTab === 'gangtok'
-                      ? 'border-amber-400/40 bg-amber-400/10 text-amber-300 hover:bg-amber-400/20'
-                      : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20'
-                  }`}
-                >
-                  <MapPin className="w-3.5 h-3.5 text-rose-500" />
-                  <span>Google Maps Location</span>
                   <ExternalLink className="w-3 h-3 opacity-60" />
                 </a>
-
-                <a
-                  href={`tel:${property.phone}`}
-                  className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-all ${
-                    isNight
-                      ? 'border-slate-700 bg-slate-800 text-slate-200 hover:text-white'
-                      : 'border-slate-300 bg-slate-100 text-slate-800 hover:bg-slate-200'
-                  }`}
-                >
-                  <Phone className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Call: +91 91630 08361</span>
-                </a>
-
-                <a
-                  href={`https://wa.me/919163008361?text=${encodeURIComponent(
-                    `Hello Parijai Group of Hotels, I am inquiring about booking and tariffs at ${property.name}.`
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-all"
-                >
-                  <MessageCircle className="w-3.5 h-3.5" />
-                  <span>WhatsApp</span>
-                </a>
-
-                <a
-                  href={`#${activeTab}-photos`}
-                  className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-all ${
-                    isNight
-                      ? 'border-slate-800 bg-slate-900 text-slate-300 hover:text-white'
-                      : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                  }`}
-                >
-                  <ImageIcon className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Photos</span>
-                </a>
               </div>
             </div>
 
-            {/* Banner Right-Side: Top Photo OR Architectural Verified Card */}
-            <div className="lg:col-span-5 relative">
-              {currentPhotos.length > 0 && currentPhotos[0]?.url ? (
-                /* Show user's provided photo */
-                <div
-                  onClick={() => openLightbox(currentPhotos[0])}
-                  className="aspect-16/10 rounded-xl overflow-hidden border border-slate-700/80 shadow-xl relative group cursor-pointer bg-slate-950"
-                >
-                  <img
-                    src={currentPhotos[0].url}
-                    alt={currentPhotos[0].title}
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent flex items-end justify-between p-4">
-                    <div className="text-xs text-white">
-                      <div className="font-semibold">{currentPhotos[0].title}</div>
-                      <div
-                        className={`text-[11px] ${
-                          activeTab === 'gangtok' ? 'text-amber-300' : 'text-emerald-300'
-                        }`}
-                      >
-                        {property.name}
-                      </div>
-                    </div>
-                    <div
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border text-xs font-semibold ${
-                        activeTab === 'gangtok'
-                          ? 'border-amber-400/40 text-amber-300'
-                          : 'border-emerald-400/40 text-emerald-300'
-                      }`}
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>{currentPhotos.length} Photo{currentPhotos.length > 1 ? 's' : ''}</span>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                /* Elegant architectural verified emblem card */
-                <div
-                  className={`aspect-16/10 rounded-xl p-6 flex flex-col justify-between border relative overflow-hidden ${
-                    isNight
-                      ? 'bg-slate-950/80 border-slate-800 text-white'
-                      : 'bg-slate-100 border-slate-300 text-slate-900'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {activeTab === 'gangtok' ? (
-                        <Mountain className="w-6 h-6 text-amber-500" />
-                      ) : (
-                        <ShieldCheck className="w-6 h-6 text-emerald-500" />
-                      )}
-                      <div>
-                        <div className="font-serif font-bold text-sm">{property.name}</div>
-                        <div className="text-[11px] text-slate-400">{property.location}</div>
-                      </div>
-                    </div>
-                    <span
-                      className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${
-                        activeTab === 'gangtok'
-                          ? 'bg-amber-400/20 text-amber-500 border-amber-400/30'
-                          : 'bg-emerald-500/20 text-emerald-500 border-emerald-500/30'
-                      }`}
-                    >
-                      Verified Property
-                    </span>
-                  </div>
-
-                  <div className="py-2">
-                    <div className="text-xs font-semibold text-slate-300">{property.landmark}</div>
-                    <div className="text-[11px] text-slate-400 mt-1">{property.vibe}</div>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      if (activeTab === 'gangtok') {
-                        fileInputGangtokRef.current?.click();
-                      } else {
-                        fileInputKalyaniRef.current?.click();
-                      }
-                    }}
-                    className={`inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-slate-950 text-xs font-bold transition-colors cursor-pointer ${
-                      activeTab === 'gangtok'
-                        ? 'bg-amber-400 hover:bg-amber-300'
-                        : 'bg-emerald-400 hover:bg-emerald-300'
-                    }`}
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>Upload Photos of {property.name}</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* 2. DEDICATED PHOTO SHOWCASE BANNER FOR ACTIVE PROPERTY */}
-        <div id={`${activeTab}-photos`} className="mt-10 scroll-mt-24">
-          <div
-            className={`p-6 sm:p-8 rounded-2xl border transition-colors shadow-sm ${
-              isNight
-                ? 'bg-slate-900/90 border-slate-800 text-white'
-                : 'bg-white border-slate-200 text-slate-900 shadow-md'
-            }`}
-          >
-            {/* Header with Title & Action Buttons */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
-              <div>
-                <div
-                  className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider border ${
-                    activeTab === 'gangtok'
-                      ? 'bg-amber-400/15 text-amber-600 dark:text-amber-400 border-amber-400/30'
-                      : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
-                  }`}
-                >
-                  {activeTab === 'gangtok' ? (
-                    <Mountain className="w-3.5 h-3.5" />
-                  ) : (
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                  )}
-                  <span>
-                    {activeTab === 'gangtok'
-                      ? 'Trikuta Residency Hotel Photos · Gangtok, Sikkim'
-                      : 'Hotel Parijaye Authentic Photos · AIIMS Kalyani, West Bengal'}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 mt-2 flex-wrap">
-                  <h3
-                    className={`text-xl sm:text-2xl font-serif font-bold ${
-                      isNight ? 'text-white' : 'text-slate-950'
-                    }`}
-                  >
-                    Photos of {property.name}
-                  </h3>
-                  <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-medium">
-                    <Database className="w-3 h-3" />
-                    <span>Database Synced</span>
-                  </span>
-                </div>
-                <p className={`text-xs sm:text-sm mt-1 ${isNight ? 'text-slate-400' : 'text-slate-600'}`}>
-                  {activeTab === 'gangtok'
-                    ? 'Authentic photos of Trikuta Residency in Upper Arithang, Gangtok.'
-                    : 'Authentic photos of Hotel Parijaye — located 2 minutes from AIIMS Kalyani Gate 1.'}
-                </p>
-              </div>
-
-              {/* Upload & Management Actions */}
-              <div className="flex flex-wrap items-center gap-2 self-start md:self-center">
-                {activeTab === 'gangtok' ? (
-                  <input
-                    ref={fileInputGangtokRef}
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={(e) => handleFileInputChange(e, 'gangtok')}
-                    className="hidden"
-                  />
-                ) : (
-                  <input
-                    ref={fileInputKalyaniRef}
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={(e) => handleFileInputChange(e, 'kalyani')}
-                    className="hidden"
-                  />
-                )}
-
-                <button
-                  onClick={() => {
-                    if (activeTab === 'gangtok') {
-                      fileInputGangtokRef.current?.click();
-                    } else {
-                      fileInputKalyaniRef.current?.click();
-                    }
-                  }}
-                  className={`px-4 py-2 rounded-lg font-bold text-xs flex items-center gap-2 shadow transition-all cursor-pointer active:scale-95 text-slate-950 ${
-                    activeTab === 'gangtok'
-                      ? 'bg-amber-400 hover:bg-amber-300'
-                      : 'bg-emerald-400 hover:bg-emerald-300'
-                  }`}
-                >
-                  <Upload className="w-4 h-4" />
-                  <span>
-                    {currentPhotos.length > 0
-                      ? `+ Add More Photos`
-                      : `Upload Photos of ${activeTab === 'gangtok' ? 'Trikuta' : 'Parijaye'}`}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => setShowUrlModal(true)}
-                  className={`px-3 py-2 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1.5 cursor-pointer ${
-                    isNight
-                      ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
-                      : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'
-                  }`}
-                >
-                  <LinkIcon className="w-3.5 h-3.5" />
-                  <span>Paste Link</span>
-                </button>
-
-                {currentPhotos.length > 0 && (
-                  <>
-                    <button
-                      onClick={() => handleClearAllPhotos(activeTab)}
-                      title="Clear all photos to re-upload"
-                      className={`p-2 rounded-lg text-xs font-medium border transition-colors text-rose-400 hover:bg-rose-500 hover:text-white cursor-pointer ${
-                        isNight ? 'border-slate-800 bg-slate-950' : 'border-slate-200 bg-slate-100'
-                      }`}
-                    >
-                      <RotateCcw className="w-3.5 h-3.5" />
-                    </button>
-
-                    <div
-                      className={`p-1 rounded-lg border flex items-center gap-1 ${
-                        isNight ? 'bg-slate-950 border-slate-800' : 'bg-slate-100 border-slate-200'
-                      }`}
-                    >
-                      <button
-                        onClick={() => setGalleryViewMode('spotlight')}
-                        className={`px-2.5 py-1 rounded text-xs font-medium cursor-pointer transition-colors ${
-                          galleryViewMode === 'spotlight'
-                            ? activeTab === 'gangtok'
-                              ? 'bg-amber-400 text-slate-950 font-bold'
-                              : 'bg-emerald-500 text-white font-bold'
-                            : isNight
-                            ? 'text-slate-400 hover:text-white'
-                            : 'text-slate-600 hover:text-slate-950'
-                        }`}
-                      >
-                        Spotlight
-                      </button>
-                      <button
-                        onClick={() => setGalleryViewMode('grid')}
-                        className={`px-2.5 py-1 rounded text-xs font-medium cursor-pointer transition-colors ${
-                          galleryViewMode === 'grid'
-                            ? activeTab === 'gangtok'
-                              ? 'bg-amber-400 text-slate-950 font-bold'
-                              : 'bg-emerald-500 text-white font-bold'
-                            : isNight
-                            ? 'text-slate-400 hover:text-white'
-                            : 'text-slate-600 hover:text-slate-950'
-                        }`}
-                      >
-                        Grid ({currentPhotos.length})
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Upload Feedback Toast */}
-            {uploadFeedback && (
-              <div className="mt-4 p-3 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>{uploadFeedback}</span>
-              </div>
-            )}
-
-            {/* DISPLAY SECTION: IF PHOTOS ARE UPLOADED */}
-            {currentPhotos.length > 0 && (
-              <div className="mt-6">
-                {/* SPOTLIGHT VIEW */}
-                {galleryViewMode === 'spotlight' && currentSpotlightPhoto && (
-                  <div className="space-y-4">
-                    {/* Big Main Viewer */}
-                    <div className="relative rounded-2xl overflow-hidden bg-slate-950 aspect-16/9 sm:aspect-21/9 border border-slate-700/80 shadow-2xl group flex items-center justify-center">
-                      <img
-                        src={currentSpotlightPhoto.url}
-                        alt={currentSpotlightPhoto.title}
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                        className="w-full h-full object-contain sm:object-cover group-hover:scale-102 transition-transform duration-700"
-                      />
-
-                      {/* Top Badges */}
-                      <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
-                        <span
-                          className={`px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border text-xs font-semibold ${
-                            activeTab === 'gangtok'
-                              ? 'border-amber-400/40 text-amber-300'
-                              : 'border-emerald-400/40 text-emerald-300'
-                          }`}
-                        >
-                          {property.name}
-                        </span>
-                        <span className="px-2.5 py-1 rounded-full bg-slate-950/75 backdrop-blur-md text-slate-300 text-xs">
-                          Photo {selectedSpotlightIndex + 1} of {currentPhotos.length}
-                        </span>
-                      </div>
-
-                      {/* Top Actions: Lightbox & Delete */}
-                      <div className="absolute top-4 right-4 flex items-center gap-2">
-                        <button
-                          onClick={() => openLightbox(currentSpotlightPhoto)}
-                          aria-label="Enlarge photo in full screen"
-                          className="p-2 rounded-full bg-slate-950/80 text-white hover:bg-amber-400 hover:text-slate-950 transition-colors backdrop-blur-md cursor-pointer border border-white/20"
-                        >
-                          <Maximize className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => deletePhoto(currentSpotlightPhoto.id, activeTab, e)}
-                          aria-label="Delete this photo"
-                          className="p-2 rounded-full bg-slate-950/80 text-rose-300 hover:bg-rose-600 hover:text-white transition-colors backdrop-blur-md cursor-pointer border border-rose-500/30"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      {/* Navigation Arrows */}
-                      {currentPhotos.length > 1 && (
-                        <>
-                          <button
-                            onClick={prevSpotlight}
-                            aria-label="Previous photo"
-                            className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-slate-950/75 text-white hover:bg-slate-900 transition-colors backdrop-blur-md cursor-pointer border border-white/20"
-                          >
-                            <ChevronLeft className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={nextSpotlight}
-                            aria-label="Next photo"
-                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-slate-950/75 text-white hover:bg-slate-900 transition-colors backdrop-blur-md cursor-pointer border border-white/20"
-                          >
-                            <ChevronRight className="w-5 h-5" />
-                          </button>
-                        </>
-                      )}
-
-                      {/* Bottom Caption Overlay */}
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/95 via-slate-950/75 to-transparent p-4 sm:p-6 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-                        <div>
-                          <h4 className="text-base sm:text-xl font-serif font-bold text-white">
-                            {currentSpotlightPhoto.title}
-                          </h4>
-                          <p className="text-xs text-slate-200 mt-1">
-                            {property.name} · {property.landmark}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => openLightbox(currentSpotlightPhoto)}
-                            className={`px-3.5 py-1.5 rounded-lg text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow transition-colors cursor-pointer ${
-                              activeTab === 'gangtok'
-                                ? 'bg-amber-400 hover:bg-amber-300'
-                                : 'bg-emerald-400 hover:bg-emerald-300'
-                            }`}
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                            <span>View Full Size</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Clickable Thumbnail Strip */}
-                    <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-thin">
-                      {currentPhotos.map((item, idx) => (
-                        <div
-                          key={item.id}
-                          onClick={() => setSelectedSpotlightIndex(idx)}
-                          className={`relative shrink-0 w-24 sm:w-32 aspect-16/10 rounded-xl overflow-hidden border-2 transition-all cursor-pointer group bg-slate-950 ${
-                            idx === selectedSpotlightIndex
-                              ? activeTab === 'gangtok'
-                                ? 'border-amber-400 ring-2 ring-amber-400/40 scale-102'
-                                : 'border-emerald-400 ring-2 ring-emerald-400/40 scale-102'
-                              : 'border-transparent opacity-65 hover:opacity-100 hover:border-slate-500'
-                          }`}
-                        >
-                          <img
-                            src={item.url}
-                            alt={item.title}
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                            }}
-                            className="w-full h-full object-cover"
-                          />
-                          <span className="absolute bottom-1 right-1 text-[9px] bg-slate-950/80 text-white px-1 rounded">
-                            {idx + 1}
-                          </span>
-                          <button
-                            onClick={(e) => deletePhoto(item.id, activeTab, e)}
-                            className="absolute top-1 right-1 p-1 rounded bg-slate-950/80 text-rose-300 hover:text-white hover:bg-rose-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-
-                      {/* Add More Tile in Strip */}
-                      <button
-                        onClick={() => {
-                          if (activeTab === 'gangtok') {
-                            fileInputGangtokRef.current?.click();
-                          } else {
-                            fileInputKalyaniRef.current?.click();
-                          }
-                        }}
-                        className={`shrink-0 w-24 sm:w-32 aspect-16/10 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-1 text-xs cursor-pointer transition-colors ${
-                          isNight
-                            ? 'border-slate-700 hover:border-amber-400 text-slate-400 hover:text-amber-300'
-                            : 'border-slate-300 hover:border-amber-500 text-slate-500 hover:text-amber-600'
-                        }`}
-                      >
-                        <Plus className="w-4 h-4" />
-                        <span className="text-[10px] font-semibold">+ Add Photo</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* GRID VIEW */}
-                {galleryViewMode === 'grid' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {currentPhotos.map((item, idx) => (
-                      <div
-                        key={item.id}
-                        onClick={() => openLightbox(item)}
-                        className={`rounded-xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer group flex flex-col justify-between ${
-                          isNight ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
-                        }`}
-                      >
-                        <div className="relative aspect-16/11 overflow-hidden bg-slate-900">
-                          <img
-                            src={item.url}
-                            alt={item.title}
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                            }}
-                            className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-500"
-                          />
-                          <div className="absolute inset-0 bg-slate-950/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <span className="p-2 rounded-full bg-slate-950/80 text-white">
-                              <Eye className="w-4 h-4 text-amber-400" />
-                            </span>
-                          </div>
-                          <span className="absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-950/80 text-amber-300 backdrop-blur-sm">
-                            #{idx + 1}
-                          </span>
-                          <button
-                            onClick={(e) => deletePhoto(item.id, activeTab, e)}
-                            className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-950/80 text-rose-300 hover:bg-rose-600 hover:text-white transition-colors"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-
-                        <div className="p-3">
-                          <h4
-                            className={`text-xs font-serif font-bold group-hover:text-amber-500 transition-colors line-clamp-1 ${
-                              isNight ? 'text-white' : 'text-slate-950'
-                            }`}
-                          >
-                            {item.title}
-                          </h4>
-                          <span className="text-[10px] text-slate-400">{property.name}</span>
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Add photo card in grid */}
-                    <div
-                      onClick={() => {
-                        if (activeTab === 'gangtok') {
-                          fileInputGangtokRef.current?.click();
-                        } else {
-                          fileInputKalyaniRef.current?.click();
-                        }
-                      }}
-                      className={`rounded-xl border-2 border-dashed aspect-16/11 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
-                        isNight
-                          ? 'border-slate-800 hover:border-amber-400 bg-slate-950/50 text-slate-400 hover:text-amber-300'
-                          : 'border-slate-300 hover:border-amber-500 bg-slate-50 text-slate-500 hover:text-amber-600'
-                      }`}
-                    >
-                      <Plus className="w-6 h-6" />
-                      <span className="text-xs font-semibold">Upload More Photos</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* VERIFIED SPACES SHOWCASE CARDS (PRESENTABLE FORMAT) */}
-            <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-                <div>
-                  <div
-                    className={`text-xs font-bold uppercase tracking-wider ${
-                      activeTab === 'gangtok' ? 'text-amber-500' : 'text-emerald-500'
-                    }`}
-                  >
-                    Verified Spaces & Guest Facilities
-                  </div>
-                  <h4
-                    className={`text-lg sm:text-xl font-serif font-bold mt-1 ${
-                      isNight ? 'text-white' : 'text-slate-950'
-                    }`}
-                  >
-                    {activeTab === 'gangtok'
-                      ? '6 Authentic Mountain Lodge Spaces (Trikuta Residency)'
-                      : '5 Authentic Healthcare-Adjacent Spaces (Hotel Parijaye)'}
-                  </h4>
-                </div>
-
-                <button
-                  onClick={() => {
-                    if (activeTab === 'gangtok') {
-                      fileInputGangtokRef.current?.click();
-                    } else {
-                      fileInputKalyaniRef.current?.click();
-                    }
-                  }}
-                  className={`px-4 py-2 rounded-xl text-slate-950 font-bold text-xs flex items-center gap-2 shadow cursor-pointer transition-all active:scale-95 ${
-                    activeTab === 'gangtok'
-                      ? 'bg-amber-400 hover:bg-amber-300'
-                      : 'bg-emerald-400 hover:bg-emerald-300'
-                  }`}
-                >
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>Select & Display All Photos</span>
-                </button>
-              </div>
-
-              {/* Grid of Verified Space Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {currentVerifiedSpaces.map((space, idx) => (
-                  <div
-                    key={space.id}
-                    className={`rounded-2xl p-5 border flex flex-col justify-between transition-all duration-300 hover:shadow-lg ${
-                      isNight
-                        ? 'bg-slate-950/80 border-slate-800 hover:border-slate-700'
-                        : 'bg-slate-50/90 border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <div>
-                      {/* Top Category Badge */}
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        <span
-                          className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
-                            activeTab === 'gangtok'
-                              ? 'bg-amber-400/10 text-amber-400 border-amber-400/30'
-                              : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                          }`}
-                        >
-                          {space.badge}
-                        </span>
-                        <span className="text-xl">{space.icon}</span>
-                      </div>
-
-                      {/* Title & Subtitle */}
-                      <h5
-                        className={`text-base font-serif font-bold ${
-                          isNight ? 'text-white' : 'text-slate-950'
-                        }`}
-                      >
-                        {space.title}
-                      </h5>
-                      <span className="text-[11px] text-slate-400 block mt-0.5">
-                        {space.subtitle}
-                      </span>
-
-                      {/* Description */}
-                      <p
-                        className={`text-xs mt-3 leading-relaxed ${
-                          isNight ? 'text-slate-300' : 'text-slate-600'
-                        }`}
-                      >
-                        {space.description}
-                      </p>
-
-                      {/* Key Highlights Tags */}
-                      <div className="flex flex-wrap gap-1.5 mt-4">
-                        {space.tags.map((tag, tIdx) => (
-                          <span
-                            key={tIdx}
-                            className={`text-[10px] font-medium px-2 py-0.5 rounded-md border ${
-                              isNight
-                                ? 'bg-slate-900 border-slate-800 text-slate-300'
-                                : 'bg-white border-slate-200 text-slate-700'
-                            }`}
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Bottom Action */}
-                    <div className="mt-5 pt-3 border-t border-slate-800/50 flex items-center justify-between">
-                      <span className="text-[11px] text-slate-400 font-mono">
-                        Slot #{idx + 1}
-                      </span>
-                      <button
-                        onClick={() => {
-                          if (activeTab === 'gangtok') {
-                            fileInputGangtokRef.current?.click();
-                          } else {
-                            fileInputKalyaniRef.current?.click();
-                          }
-                        }}
-                        className={`inline-flex items-center gap-1.5 text-xs font-bold cursor-pointer transition-colors ${
-                          activeTab === 'gangtok'
-                            ? 'text-amber-400 hover:text-amber-300'
-                            : 'text-emerald-400 hover:text-emerald-300'
-                        }`}
-                      >
-                        <Upload className="w-3 h-3" />
-                        <span>Upload This Photo</span>
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Guidance Notice */}
+            {/* TripAdvisor & Google Ratings Pill Bar (Like Reference UI) */}
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* TripAdvisor Rating */}
               <div
-                className={`mt-6 p-4 rounded-xl border flex items-start gap-3 ${
-                  activeTab === 'gangtok'
-                    ? 'bg-amber-400/10 border-amber-400/20 text-amber-300'
-                    : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold ${
+                  isNight
+                    ? "bg-slate-900/90 border-slate-800 text-slate-200"
+                    : "bg-white border-slate-200 text-slate-800 shadow-xs"
                 }`}
               >
-                <AlertCircle
-                  className={`w-5 h-5 shrink-0 mt-0.5 ${
-                    activeTab === 'gangtok' ? 'text-amber-400' : 'text-emerald-400'
-                  }`}
-                />
-                <div className="text-xs leading-relaxed">
-                  <strong>How to display your photos:</strong> Click <strong>&quot;Select & Display All Photos&quot;</strong> above to pick your photos from your device. Your browser instantly optimizes and stores them in your private local browser database, displaying them in high-definition across all tabs with zero quota errors!
+                <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[9px] font-bold">
+                  ●
                 </div>
+                <div className="flex items-center gap-1 text-emerald-500">
+                  <span>●●●●◐</span>
+                </div>
+                <span className="text-[11px] text-slate-400">
+                  {property.reviewCount * 2}+ reviews
+                </span>
+              </div>
+
+              {/* Google Verified Reviews */}
+              <div
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold ${
+                  isNight
+                    ? "bg-slate-900/90 border-slate-800 text-slate-200"
+                    : "bg-white border-slate-200 text-slate-800 shadow-xs"
+                }`}
+              >
+                <span className="font-bold text-xs tracking-tight">
+                  <span className="text-blue-500">G</span>
+                  <span className="text-rose-500">o</span>
+                  <span className="text-amber-500">o</span>
+                  <span className="text-blue-500">g</span>
+                  <span className="text-emerald-500">l</span>
+                  <span className="text-rose-500">e</span>
+                </span>
+                <span className="text-amber-400 font-mono font-bold">
+                  {property.rating} ★
+                </span>
+                <span className="text-[11px] text-slate-400">
+                  {property.reviewCount} reviews
+                </span>
               </div>
             </div>
           </div>
+
+          {/* 5-PHOTO MOSAIC GALLERY: EXACT LEMON TREE DESIGN */}
+          {/* 1 Large Hero on Left + 2x2 Grid on Right */}
+          {(() => {
+            const defaultSet = HOTEL_SHOWCASE_PHOTOS[activeTab];
+            // Combine any user uploaded photos with the default set
+            const activeGallery = [
+              ...currentPhotos.map((p) => ({
+                id: p.id,
+                url: p.url,
+                title: p.title,
+                category: p.caption || "Guest Photo"
+              })),
+              ...defaultSet
+            ];
+
+            const photo0 = activeGallery[0] || defaultSet[0];
+            const photo1 = activeGallery[1] || defaultSet[1];
+            const photo2 = activeGallery[2] || defaultSet[2];
+            const photo3 = activeGallery[3] || defaultSet[3];
+            const photo4 = activeGallery[4] || defaultSet[4];
+
+            return (
+              <div className="mt-5 relative">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-2.5 sm:gap-3">
+                  {/* Left Big Hero Photo (span 7) */}
+                  <div
+                    onClick={() =>
+                      openLightbox({
+                        id: photo0.id,
+                        url: photo0.url,
+                        title: photo0.title,
+                        caption: photo0.category,
+                        addedAt: Date.now()
+                      })
+                    }
+                    className="lg:col-span-7 h-[280px] xs:h-[340px] sm:h-[420px] md:h-[480px] rounded-2xl overflow-hidden relative group cursor-pointer bg-slate-900 border border-slate-700/60 shadow-lg"
+                  >
+                    <img
+                      src={photo0.url}
+                      alt={photo0.title}
+                      loading="eager"
+                      className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+
+                    {/* Subtle caption bottom */}
+                    <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 right-4">
+                      <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md text-amber-300 border border-amber-400/30">
+                        {photo0.category}
+                      </span>
+                      <h4 className="text-white font-serif font-bold text-sm sm:text-base mt-1 line-clamp-1 drop-shadow-md">
+                        {photo0.title}
+                      </h4>
+                    </div>
+                  </div>
+
+                  {/* Right 2x2 Grid (span 5) */}
+                  <div className="lg:col-span-5 grid grid-cols-2 gap-2.5 sm:gap-3 h-[280px] xs:h-[340px] sm:h-[420px] md:h-[480px]">
+                    {/* Top Left (photo1) */}
+                    <div
+                      onClick={() =>
+                        openLightbox({
+                          id: photo1.id,
+                          url: photo1.url,
+                          title: photo1.title,
+                          caption: photo1.category,
+                          addedAt: Date.now()
+                        })
+                      }
+                      className="rounded-2xl overflow-hidden relative group cursor-pointer bg-slate-900 border border-slate-700/60 shadow-md"
+                    >
+                      <img
+                        src={photo1.url}
+                        alt={photo1.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-transparent transition-colors" />
+                      <div className="absolute bottom-2 left-2 right-2">
+                        <span className="text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-950/80 backdrop-blur-sm text-slate-200 line-clamp-1">
+                          {photo1.category}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Top Right (photo2) */}
+                    <div
+                      onClick={() =>
+                        openLightbox({
+                          id: photo2.id,
+                          url: photo2.url,
+                          title: photo2.title,
+                          caption: photo2.category,
+                          addedAt: Date.now()
+                        })
+                      }
+                      className="rounded-2xl overflow-hidden relative group cursor-pointer bg-slate-900 border border-slate-700/60 shadow-md"
+                    >
+                      <img
+                        src={photo2.url}
+                        alt={photo2.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-transparent transition-colors" />
+                      <div className="absolute bottom-2 left-2 right-2">
+                        <span className="text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-950/80 backdrop-blur-sm text-slate-200 line-clamp-1">
+                          {photo2.category}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Bottom Left (photo3) */}
+                    <div
+                      onClick={() =>
+                        openLightbox({
+                          id: photo3.id,
+                          url: photo3.url,
+                          title: photo3.title,
+                          caption: photo3.category,
+                          addedAt: Date.now()
+                        })
+                      }
+                      className="rounded-2xl overflow-hidden relative group cursor-pointer bg-slate-900 border border-slate-700/60 shadow-md"
+                    >
+                      <img
+                        src={photo3.url}
+                        alt={photo3.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-transparent transition-colors" />
+                      <div className="absolute bottom-2 left-2 right-2">
+                        <span className="text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-950/80 backdrop-blur-sm text-slate-200 line-clamp-1">
+                          {photo3.category}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Bottom Right (photo4) with "Show all photos" Button */}
+                    <div
+                      onClick={() =>
+                        openLightbox({
+                          id: photo4.id,
+                          url: photo4.url,
+                          title: photo4.title,
+                          caption: photo4.category,
+                          addedAt: Date.now()
+                        })
+                      }
+                      className="rounded-2xl overflow-hidden relative group cursor-pointer bg-slate-900 border border-slate-700/60 shadow-md"
+                    >
+                      <img
+                        src={photo4.url}
+                        alt={photo4.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-slate-950/30 group-hover:bg-slate-950/20 transition-colors" />
+
+                      {/* "Show all photos" Pill Button (Exact Lemon Tree Style in bottom right) */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openLightbox({
+                            id: photo0.id,
+                            url: photo0.url,
+                            title: photo0.title,
+                            caption: photo0.category,
+                            addedAt: Date.now()
+                          });
+                        }}
+                        className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 px-3 py-1.5 rounded-lg bg-slate-950/85 hover:bg-slate-900 text-white text-[11px] sm:text-xs font-semibold backdrop-blur-md border border-white/25 shadow-xl flex items-center gap-1.5 transition-all hover:scale-105 cursor-pointer"
+                      >
+                        <GridIcon className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Show all photos</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
         {/* 3. Rooms Section Header & Clean Architectural Room Cards (Zero Fake Photos) */}
