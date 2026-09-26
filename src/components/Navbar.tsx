@@ -16,7 +16,17 @@ import {
   Camera,
   ChevronDown,
   Mountain,
-  Building
+  Building,
+  Heart,
+  History,
+  Briefcase,
+  Globe,
+  HelpCircle,
+  FileText,
+  Sparkles,
+  MapPin,
+  ExternalLink,
+  ChevronRight
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { ParijaiLogo } from './ParijaiLogo';
@@ -44,6 +54,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const phoneCardRef = useRef<HTMLDivElement>(null);
   const propertiesDropdownRef = useRef<HTMLDivElement>(null);
   const adminDropdownRef = useRef<HTMLDivElement>(null);
+  const menuDropdownRef = useRef<HTMLDivElement>(null);
 
   const { isNight, toggleTheme } = useTheme();
 
@@ -68,6 +79,9 @@ export const Navbar: React.FC<NavbarProps> = ({
       }
       if (adminDropdownRef.current && !adminDropdownRef.current.contains(target)) {
         setAdminDropdownOpen(false);
+      }
+      if (menuDropdownRef.current && !menuDropdownRef.current.contains(target)) {
+        setMobileMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -102,44 +116,35 @@ export const Navbar: React.FC<NavbarProps> = ({
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           isScrolled
-            ? isNight
-              ? 'bg-slate-950/85 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/30 py-3'
-              : 'bg-white/85 backdrop-blur-xl border-b border-slate-200/80 shadow-sm py-3'
-            : isNight
-            ? 'bg-slate-950/30 backdrop-blur-md border-b border-white/5 py-4'
-            : 'bg-white/45 backdrop-blur-md border-b border-slate-900/5 py-4'
+            ? 'bg-black/60 backdrop-blur-md border-b border-white/10 shadow-lg py-2.5 sm:py-3'
+            : 'bg-black/10 backdrop-blur-xs border-b border-white/10 py-3 sm:py-3.5'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-8">
+          <div className="flex items-center justify-between gap-1.5 sm:gap-3">
             {/* BRAND LOGO / WORDMARK */}
             <a
               href="#top"
-              className="group flex items-center gap-3 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-lg select-none"
+              className="group flex items-center gap-1.5 sm:gap-2.5 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-lg select-none min-w-0"
             >
               {/* Official Deep Green & Gold Circular Medallion Logo */}
-              <ParijaiLogo size={44} />
+              <div className="shrink-0">
+                <ParijaiLogo size={36} className="sm:w-[42px] sm:h-[42px]" />
+              </div>
 
-              <div className="flex flex-col">
-                <span
-                  className={`font-serif text-lg sm:text-xl font-bold tracking-[0.14em] uppercase transition-colors duration-300 ${
-                    isNight ? 'text-white group-hover:text-amber-300' : 'text-slate-950 group-hover:text-amber-700'
-                  }`}
-                >
-                  Parijai Group of Hotels
+              <div className="flex flex-col min-w-0">
+                <span className="font-serif text-xs sm:text-base md:text-lg lg:text-xl font-bold tracking-[0.05em] sm:tracking-[0.1em] uppercase text-white group-hover:text-amber-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] transition-colors duration-200 truncate">
+                  Parijai Group
+                  <span className="hidden sm:inline"> of Hotels</span>
                 </span>
-                <span
-                  className={`text-[9px] tracking-[0.22em] uppercase font-sans font-medium transition-colors duration-300 hidden sm:block ${
-                    isNight ? 'text-emerald-400/90' : 'text-emerald-800'
-                  }`}
-                >
+                <span className="text-[8px] sm:text-[9px] tracking-[0.15em] sm:tracking-[0.2em] uppercase font-sans font-semibold text-emerald-400 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)] hidden lg:block">
                   Sikkim & Bengal · Trikuta & Parijaye
                 </span>
               </div>
             </a>
 
-            {/* CENTER GUEST NAVIGATION (Pure guest links, no clutter, no collision) */}
-            <nav className="hidden lg:flex items-center gap-5 xl:gap-7 text-xs tracking-wider uppercase font-semibold">
+            {/* CENTER GUEST NAVIGATION (Visible ONLY on extra-large screens: >= 1280px) */}
+            <nav className="hidden 2xl:flex items-center gap-5 xl:gap-7 text-xs tracking-wider uppercase font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
               {/* Properties Dropdown */}
               <div className="relative" ref={propertiesDropdownRef}>
                 <button
@@ -152,45 +157,35 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className={`inline-flex items-center gap-1.5 py-1.5 transition-colors cursor-pointer ${
                     propertiesDropdownOpen
                       ? 'text-amber-400'
-                      : isNight
-                      ? 'text-slate-200 hover:text-amber-300'
-                      : 'text-slate-700 hover:text-amber-600'
+                      : 'text-white hover:text-amber-300'
                   }`}
                 >
                   <span>Properties</span>
                   <ChevronDown
                     className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                      propertiesDropdownOpen ? 'rotate-180 text-amber-400' : 'opacity-70'
+                      propertiesDropdownOpen ? 'rotate-180 text-amber-400' : 'text-white/80'
                     }`}
                   />
                 </button>
 
                 {propertiesDropdownOpen && (
-                  <div
-                    className={`absolute left-0 top-full mt-2 w-76 p-2 rounded-2xl border shadow-2xl z-50 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${
-                      isNight
-                        ? 'bg-slate-900/98 border-slate-700/80 text-white'
-                        : 'bg-white/98 border-slate-200 text-slate-900 shadow-xl'
-                    }`}
-                  >
+                  <div className="absolute left-0 top-full mt-2 w-76 p-2 rounded-2xl border border-slate-700/80 bg-slate-950/95 text-white shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
                     <button
                       type="button"
                       onClick={() => {
                         onSelectProperty('gangtok');
                         setPropertiesDropdownOpen(false);
                       }}
-                      className={`w-full p-3 rounded-xl text-left transition-all flex items-start gap-3 cursor-pointer group ${
-                        isNight ? 'hover:bg-slate-800/80' : 'hover:bg-amber-50/70'
-                      }`}
+                      className="w-full p-3 rounded-xl text-left transition-all flex items-start gap-3 cursor-pointer group hover:bg-slate-800/80"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-amber-400/15 text-amber-500 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-8 h-8 rounded-lg bg-amber-400/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
                         <Mountain className="w-4 h-4" />
                       </div>
                       <div>
-                        <div className="font-serif font-bold text-xs tracking-normal normal-case group-hover:text-amber-500 transition-colors">
+                        <div className="font-serif font-bold text-xs tracking-normal normal-case group-hover:text-amber-300 transition-colors text-white">
                           Trikuta Residency
                         </div>
-                        <div className="text-[11px] text-slate-400 normal-case tracking-normal">
+                        <div className="text-[11px] text-slate-300 normal-case tracking-normal">
                           Gangtok, Sikkim · Kanchenjunga Valley Views
                         </div>
                       </div>
@@ -202,18 +197,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                         onSelectProperty('kalyani');
                         setPropertiesDropdownOpen(false);
                       }}
-                      className={`w-full p-3 rounded-xl text-left transition-all flex items-start gap-3 cursor-pointer group ${
-                        isNight ? 'hover:bg-slate-800/80' : 'hover:bg-emerald-50/70'
-                      }`}
+                      className="w-full p-3 rounded-xl text-left transition-all flex items-start gap-3 cursor-pointer group hover:bg-slate-800/80"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
                         <Building className="w-4 h-4" />
                       </div>
                       <div>
-                        <div className="font-serif font-bold text-xs tracking-normal normal-case group-hover:text-emerald-500 transition-colors">
+                        <div className="font-serif font-bold text-xs tracking-normal normal-case group-hover:text-emerald-300 transition-colors text-white">
                           Hotel Parijaye
                         </div>
-                        <div className="text-[11px] text-slate-400 normal-case tracking-normal">
+                        <div className="text-[11px] text-slate-300 normal-case tracking-normal">
                           Kalyani, West Bengal · 2-min to AIIMS OPD
                         </div>
                       </div>
@@ -223,47 +216,32 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
 
               <a
-                href="#comparison"
-                className={`py-1.5 transition-colors ${
-                  isNight ? 'text-slate-200 hover:text-amber-300' : 'text-slate-700 hover:text-amber-600'
-                }`}
-              >
-                Compare
-              </a>
-
-              <a
                 href="#interactive-map"
-                className={`py-1.5 transition-colors ${
-                  isNight ? 'text-slate-200 hover:text-amber-300' : 'text-slate-700 hover:text-amber-600'
-                }`}
+                className="py-1.5 transition-colors text-white hover:text-amber-300"
               >
                 Map & Distances
               </a>
 
               <a
                 href="#guides"
-                className={`py-1.5 transition-colors ${
-                  isNight ? 'text-slate-200 hover:text-amber-300' : 'text-slate-700 hover:text-amber-600'
-                }`}
+                className="py-1.5 transition-colors text-white hover:text-amber-300"
               >
                 Local Guides
               </a>
 
               <a
                 href="#faqs"
-                className={`py-1.5 transition-colors ${
-                  isNight ? 'text-slate-200 hover:text-amber-300' : 'text-slate-700 hover:text-amber-600'
-                }`}
+                className="py-1.5 transition-colors text-white hover:text-amber-300"
               >
                 Policies & FAQs
               </a>
             </nav>
 
-            {/* RIGHT UTILITY & ACTIONS BAR (Unified matching icon row + CTA) */}
-            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-              {/* Admin Menu Icon Button (Discreet, matches other circular icons, zero collision) */}
+            {/* RIGHT UTILITY & ACTIONS BAR (Responsive, no overlap with scrollbar) */}
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+              {/* Admin Menu Icon Button (Hidden on tablet/mobile to save space; accessible in mobile drawer) */}
               {(onOpenDatabaseRecords || onOpenManagePhotos) && (
-                <div className="relative" ref={adminDropdownRef}>
+                <div className="relative hidden xl:block" ref={adminDropdownRef}>
                   <button
                     type="button"
                     onClick={() => {
@@ -273,25 +251,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                     }}
                     aria-label="Owner & Admin Controls"
                     title="Owner & Admin Controls (Database & Photos)"
-                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer border ${
+                    className={`w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full flex items-center justify-center transition-all cursor-pointer border ${
                       adminDropdownOpen
                         ? 'bg-amber-400 text-slate-950 border-amber-400 shadow-md ring-2 ring-amber-400/30'
-                        : isNight
-                        ? 'bg-white/5 hover:bg-white/10 text-amber-400 border-white/10 hover:border-amber-400/30'
-                        : 'bg-slate-100 hover:bg-slate-200 text-amber-700 border-slate-300'
+                        : 'bg-black/30 hover:bg-black/50 text-white border-white/20'
                     }`}
                   >
-                    <ShieldCheck className="w-4 h-4" />
+                    <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
                   </button>
 
                   {adminDropdownOpen && (
-                    <div
-                      className={`absolute right-0 top-full mt-2 w-64 p-2 rounded-2xl border shadow-2xl z-50 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 ${
-                        isNight
-                          ? 'bg-slate-900/98 border-slate-700 text-white'
-                          : 'bg-white/98 border-slate-200 text-slate-900 shadow-xl'
-                      }`}
-                    >
+                    <div className="absolute right-0 top-full mt-2 w-64 p-2 rounded-2xl border border-slate-700/80 bg-slate-950/95 text-white shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="px-3 py-2 border-b border-slate-800 text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                         <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
                         <span>Owner & Admin Hub</span>
@@ -305,15 +275,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                               onOpenManagePhotos();
                               setAdminDropdownOpen(false);
                             }}
-                            className={`w-full p-2.5 rounded-xl text-left transition-colors flex items-center gap-2.5 cursor-pointer normal-case ${
-                              isNight ? 'hover:bg-slate-800' : 'hover:bg-slate-100'
-                            }`}
+                            className="w-full p-2.5 rounded-xl text-left transition-colors flex items-center gap-2.5 cursor-pointer normal-case hover:bg-slate-800"
                           >
                             <div className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
                               <Camera className="w-3.5 h-3.5" />
                             </div>
                             <div>
-                              <div className="text-xs font-semibold">Manage Photos (Cloud)</div>
+                              <div className="text-xs font-semibold text-white">Manage Photos (Cloud)</div>
                               <div className="text-[10px] text-slate-400">Passcode-protected owner upload</div>
                             </div>
                           </button>
@@ -326,15 +294,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                               onOpenDatabaseRecords();
                               setAdminDropdownOpen(false);
                             }}
-                            className={`w-full p-2.5 rounded-xl text-left transition-colors flex items-center gap-2.5 cursor-pointer normal-case ${
-                              isNight ? 'hover:bg-slate-800' : 'hover:bg-slate-100'
-                            }`}
+                            className="w-full p-2.5 rounded-xl text-left transition-colors flex items-center gap-2.5 cursor-pointer normal-case hover:bg-slate-800"
                           >
                             <div className="w-7 h-7 rounded-lg bg-amber-400/15 text-amber-400 flex items-center justify-center shrink-0">
                               <Database className="w-3.5 h-3.5" />
                             </div>
                             <div>
-                              <div className="text-xs font-semibold">Database Records</div>
+                              <div className="text-xs font-semibold text-white">Database Records</div>
                               <div className="text-[10px] text-slate-400">Bookings, leads & photo index</div>
                             </div>
                           </button>
@@ -351,29 +317,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                 type="button"
                 aria-label={`Switch to ${isNight ? 'Day' : 'Night'} mood`}
                 title={`Switch to ${isNight ? 'Day' : 'Night'} mood`}
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border ${
-                  isNight
-                    ? 'bg-white/5 hover:bg-white/10 text-amber-300 border-white/10 hover:border-amber-400/40'
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'
-                }`}
+                className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border bg-black/30 hover:bg-black/50 text-white border-white/20"
               >
-                {isNight ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-700" />}
+                {isNight ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-indigo-300" />}
               </button>
 
-              {/* WhatsApp Action */}
+              {/* WhatsApp Action (Hidden on small tablets to preserve space for CTA and menu) */}
               <a
                 href="https://wa.me/919163008361?text=Hello%20Parijai%20Group%20of%20Hotels,%20I%20would%20like%20to%20inquire%20about%20room%20availability."
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Direct WhatsApp Inquiry"
                 title="Direct WhatsApp Inquiry (+91 91630 08361)"
-                className={`hidden md:inline-flex items-center justify-center w-9 h-9 rounded-full transition-all border ${
-                  isNight
-                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20'
-                    : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-                }`}
+                className="hidden lg:inline-flex items-center justify-center w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full transition-all border bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30"
               >
-                <MessageCircle className="w-4 h-4" />
+                <MessageCircle className="w-3.5 h-3.5" />
               </a>
 
               {/* Helpline Call Button */}
@@ -382,36 +340,28 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={handleCallIconClick}
                   aria-label="Call Hotel Desk (+91 91630 08361)"
                   title="Call Hotel Desk (+91 91630 08361)"
-                  className={`w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer border ${
+                  className={`w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full flex items-center justify-center transition-all cursor-pointer border ${
                     showPhoneCard
                       ? 'bg-amber-400 text-slate-950 border-amber-400 shadow-md ring-2 ring-amber-400/30'
-                      : isNight
-                      ? 'bg-white/5 hover:bg-white/10 text-amber-400 border-white/10'
-                      : 'bg-slate-100 hover:bg-slate-200 text-amber-700 border-slate-300'
+                      : 'bg-black/30 hover:bg-black/50 text-amber-400 border-white/20'
                   }`}
                 >
-                  <PhoneCall className="w-4 h-4" />
+                  <PhoneCall className="w-3.5 h-3.5" />
                 </button>
 
                 {/* Desk Phone Popover */}
                 {showPhoneCard && (
-                  <div
-                    className={`absolute right-0 top-full mt-2 w-72 p-4 rounded-2xl border shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl ${
-                      isNight
-                        ? 'bg-slate-900/98 border-slate-700 text-white'
-                        : 'bg-white/98 border-slate-200 text-slate-900 shadow-xl'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
+                  <div className="absolute right-0 top-full mt-2 w-72 p-4 rounded-2xl border border-slate-700/80 bg-slate-950/95 text-white shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                       <div className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-500">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
                           24/7 Hotel Reception Desk
                         </span>
                       </div>
                       <button
                         onClick={() => setShowPhoneCard(false)}
-                        className="text-slate-400 hover:text-slate-200 text-xs p-1 cursor-pointer"
+                        className="text-slate-400 hover:text-white text-xs p-1 cursor-pointer"
                         aria-label="Close"
                       >
                         <X className="w-3.5 h-3.5" />
@@ -420,7 +370,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                     <div className="mt-3">
                       <div className="text-[11px] text-slate-400">Direct Helpline & Reservations</div>
-                      <div className="text-lg font-bold font-mono tracking-tight mt-0.5 text-amber-500">
+                      <div className="text-lg font-bold font-mono tracking-tight mt-0.5 text-amber-400">
                         +91 91630 08361
                       </div>
                     </div>
@@ -439,9 +389,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         className={`py-2 px-3 rounded-xl border text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                           phoneCopied
                             ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
-                            : isNight
-                            ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700'
-                            : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'
+                            : 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700'
                         }`}
                       >
                         {phoneCopied ? (
@@ -458,13 +406,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </button>
                     </div>
 
-                    <div className="mt-2.5 pt-2.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px]">
+                    <div className="mt-2.5 pt-2.5 border-t border-slate-800 flex items-center justify-between text-[11px]">
                       <span className="text-slate-400">Gangtok & Kalyani</span>
                       <a
                         href="https://wa.me/919163008361?text=Hello%20Parijai%20Group%20of%20Hotels,%20I%20would%20like%20to%20inquire%20about%20room%20availability."
                         target="_blank"
                         rel="noreferrer"
-                        className="text-emerald-500 hover:underline flex items-center gap-1"
+                        className="text-emerald-400 hover:underline flex items-center gap-1"
                       >
                         <MessageCircle className="w-3 h-3" />
                         <span>WhatsApp Desk</span>
@@ -474,240 +422,232 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </div>
 
-              {/* Subtle divider before CTA on desktop */}
-              <div
-                className={`hidden sm:block h-5 w-px ${
-                  isNight ? 'bg-white/15' : 'bg-slate-300'
-                }`}
-              />
-
-              {/* PRIMARY CTA: RESERVE STAY */}
+              {/* PRIMARY CTA: RESERVE STAY - Visible ONLY on wider desktop screens (>=1280px) where full width is available without collision */}
               <button
                 onClick={onBookClick}
-                className="hidden sm:inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full font-serif font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-slate-950 hover:brightness-105 active:scale-95 transition-all shadow-md cursor-pointer whitespace-nowrap"
+                className="hidden xl:inline-flex items-center gap-1.5 px-3.5 lg:px-4 py-2 rounded-full font-serif font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-slate-950 hover:brightness-105 active:scale-95 transition-all shadow-md cursor-pointer whitespace-nowrap shrink-0 ml-1"
               >
                 <Calendar className="w-3.5 h-3.5" />
                 <span>Reserve Stay</span>
               </button>
 
-              {/* Mobile Drawer Hamburger Button */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label="Toggle mobile menu"
-                className={`lg:hidden p-2 rounded-xl border transition-colors ${
-                  isNight
-                    ? 'border-white/10 text-slate-200 hover:bg-white/10'
-                    : 'border-slate-300 text-slate-800 hover:bg-slate-100'
-                }`}
-              >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
+              {/* THREE-LINE MENU BUTTON: Displays on all screens (with label 'Menu' on md+, icon on mobile) */}
+              <div className="relative" ref={menuDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(!mobileMenuOpen);
+                    setPropertiesDropdownOpen(false);
+                    setAdminDropdownOpen(false);
+                    setShowPhoneCard(false);
+                  }}
+                  aria-label="Toggle navigation menu"
+                  title="Navigation Menu"
+                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border transition-all cursor-pointer text-xs font-semibold ${
+                    mobileMenuOpen
+                      ? 'bg-amber-400 text-slate-950 border-amber-400 shadow-md ring-2 ring-amber-400/30'
+                      : 'bg-black/30 hover:bg-black/50 text-white border-white/20'
+                  }`}
+                >
+                  {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                  <span className="hidden sm:inline font-medium">Menu</span>
+                </button>
+
+                {/* ANIMATED PROFESSIONAL FLYOUT MENU (Deep luxury smoky glass, high legibility over photo backgrounds) */}
+                {mobileMenuOpen && (
+                  <div
+                    className="absolute right-0 top-full mt-2 w-[88vw] max-w-[320px] sm:w-80 rounded-2xl border border-white/20 bg-slate-950/92 backdrop-blur-2xl text-white shadow-[0_25px_65px_rgba(0,0,0,0.85)] z-50 animate-menu-fly-in overflow-hidden ring-1 ring-white/10"
+                  >
+                    <div className="max-h-[80vh] overflow-y-auto divide-y divide-white/10 p-2.5 text-xs menu-scrollbar">
+                      {/* Section 1: Trips (Matching Reference Image) */}
+                      <div className="py-2 px-1">
+                        <div className="text-[11px] font-bold text-white px-3 mb-2 flex items-center justify-between">
+                          <span>Trips & Stays</span>
+                          <span className="text-[9px] uppercase tracking-wider text-amber-400 font-semibold">Parijai</span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onSelectProperty('gangtok');
+                            setMobileMenuOpen(false);
+                          }}
+                          className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition-colors group cursor-pointer text-slate-200 hover:text-white"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Mountain className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+                            <div>
+                              <div className="font-semibold text-white group-hover:text-amber-300">Trikuta Residency</div>
+                              <div className="text-[10px] text-slate-300">Gangtok · Kanchenjunga Valley</div>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                            Sikkim
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onSelectProperty('kalyani');
+                            setMobileMenuOpen(false);
+                          }}
+                          className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition-colors group cursor-pointer text-slate-200 hover:text-white"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Building className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                            <div>
+                              <div className="font-semibold text-white group-hover:text-emerald-300">Hotel Parijaye</div>
+                              <div className="text-[10px] text-slate-300">Kalyani · 2-min to AIIMS OPD</div>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            AIIMS
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            onBookClick();
+                          }}
+                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left hover:bg-white/10 transition-colors group cursor-pointer text-slate-200 hover:text-white"
+                        >
+                          <Briefcase className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+                          <span>Bookings & Reservations</span>
+                        </button>
+
+                        <a
+                          href="#interactive-map"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors"
+                        >
+                          <Compass className="w-4 h-4 text-amber-400" />
+                          <span>Map, Routes & Excursions</span>
+                        </a>
+                      </div>
+
+                      {/* Section 2: Preferences (Matching Reference Image) */}
+                      <div className="py-2 px-1">
+                        <div className="text-[11px] font-bold text-white px-3 mb-2">
+                          Preferences
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            toggleTheme();
+                          }}
+                          className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition-colors cursor-pointer text-slate-200 hover:text-white"
+                        >
+                          <div className="flex items-center gap-3">
+                            {isNight ? (
+                              <Sun className="w-4 h-4 text-amber-400" />
+                            ) : (
+                              <Moon className="w-4 h-4 text-indigo-300" />
+                            )}
+                            <span>Appearance mood</span>
+                          </div>
+                          <span className="text-[10px] capitalize px-2 py-0.5 rounded bg-white/10 text-white border border-white/15">
+                            {isNight ? 'Night' : 'Day'}
+                          </span>
+                        </button>
+
+                        <a
+                          href="#faqs"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors"
+                        >
+                          <Globe className="w-4 h-4 text-amber-400" />
+                          <span>Language & Currency (INR ₹)</span>
+                        </a>
+                      </div>
+
+                      {/* Section 3: Support (Matching Reference Image) */}
+                      <div className="py-2 px-1">
+                        <div className="text-[11px] font-bold text-white px-3 mb-2">
+                          Support
+                        </div>
+
+                        <a
+                          href="#faqs"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors"
+                        >
+                          <HelpCircle className="w-4 h-4 text-amber-400" />
+                          <span>Help and support & FAQs</span>
+                        </a>
+
+                        <a
+                          href="https://wa.me/919163008361?text=Hello%20Parijai%20Group%20of%20Hotels,%20I%20would%20like%20to%20inquire%20about%20room%20availability."
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-3 px-3 py-2 rounded-xl text-emerald-300 hover:text-emerald-200 hover:bg-white/10 transition-colors"
+                        >
+                          <MessageCircle className="w-4 h-4 text-emerald-400" />
+                          <span>WhatsApp Desk (24/7)</span>
+                        </a>
+
+                        <a
+                          href="tel:+919163008361"
+                          className="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors"
+                        >
+                          <PhoneCall className="w-4 h-4 text-amber-400" />
+                          <span>Call Reception (+91 91630 08361)</span>
+                        </a>
+
+                        {onOpenManagePhotos && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onOpenManagePhotos();
+                              setMobileMenuOpen(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left hover:bg-white/10 transition-colors text-slate-200 hover:text-white cursor-pointer"
+                          >
+                            <Camera className="w-4 h-4 text-emerald-400" />
+                            <span>Parijai Photo Manager</span>
+                          </button>
+                        )}
+
+                        {onOpenDatabaseRecords && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onOpenDatabaseRecords();
+                              setMobileMenuOpen(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left hover:bg-white/10 transition-colors text-slate-200 hover:text-white cursor-pointer"
+                          >
+                            <Database className="w-4 h-4 text-amber-400" />
+                            <span>Database Records & Leads</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Bottom CTA in Flyout Menu */}
+                    <div className="p-3 bg-black/40 border-t border-white/10">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          onBookClick();
+                        }}
+                        className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-slate-950 font-serif font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg hover:brightness-105 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <Calendar className="w-3.5 h-3.5" />
+                        <span>Reserve Stay</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </header>
-
-      {/* MOBILE DRAWER (Transparent glassmorphic overlay) */}
-      {mobileMenuOpen && (
-        <div
-          className={`lg:hidden fixed inset-0 z-30 pt-20 pb-8 px-5 flex flex-col justify-between backdrop-blur-2xl transition-all ${
-            isNight ? 'bg-slate-950/95 text-slate-100' : 'bg-white/95 text-slate-900'
-          }`}
-        >
-          <div className="space-y-5 overflow-y-auto">
-            {/* Mobile Header Brand Identity */}
-            <div className="flex items-center gap-3 pb-3 border-b border-slate-800/80">
-              <ParijaiLogo size={42} />
-              <div className="flex flex-col">
-                <span className="font-serif font-bold text-base text-white">
-                  Parijai Group of Hotels
-                </span>
-                <span className="text-[10px] tracking-wider uppercase text-emerald-400 font-medium">
-                  Sikkim & Bengal · Heritage & Care
-                </span>
-              </div>
-            </div>
-
-            {/* Property Selectors */}
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-                Residencies & Stays
-              </div>
-              <div className="space-y-2">
-                <button
-                  onClick={() => {
-                    onSelectProperty('gangtok');
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-colors ${
-                    isNight ? 'border-slate-800 bg-slate-900/60' : 'border-slate-200 bg-slate-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-amber-400/20 text-amber-500 flex items-center justify-center">
-                      <Mountain className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="font-serif font-bold text-sm">Trikuta Residency</div>
-                      <div className="text-xs text-slate-400">Gangtok, Sikkim · Valley View</div>
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-400/20 text-amber-400">
-                    Sikkim
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    onSelectProperty('kalyani');
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-colors ${
-                    isNight ? 'border-slate-800 bg-slate-900/60' : 'border-slate-200 bg-slate-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                      <Building className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="font-serif font-bold text-sm">Hotel Parijaye</div>
-                      <div className="text-xs text-slate-400">Kalyani · 2-min to AIIMS OPD</div>
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
-                    AIIMS
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            {/* Quick Navigation Links */}
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-                Explore & Information
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
-                <a
-                  href="#comparison"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`p-2.5 rounded-lg border transition-colors ${
-                    isNight ? 'border-slate-800/80 hover:bg-slate-900' : 'border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  Property Comparison
-                </a>
-                <a
-                  href="#interactive-map"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`p-2.5 rounded-lg border transition-colors ${
-                    isNight ? 'border-slate-800/80 hover:bg-slate-900 text-amber-400' : 'border-slate-200 hover:bg-slate-100 text-amber-700'
-                  }`}
-                >
-                  Map & Distances
-                </a>
-                <a
-                  href="#guides"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`p-2.5 rounded-lg border transition-colors ${
-                    isNight ? 'border-slate-800/80 hover:bg-slate-900' : 'border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  Local Guides & Transit
-                </a>
-                <a
-                  href="#faqs"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`p-2.5 rounded-lg border transition-colors ${
-                    isNight ? 'border-slate-800/80 hover:bg-slate-900' : 'border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  FAQs & Tariffs
-                </a>
-                <a
-                  href="#contact"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`p-2.5 rounded-lg border transition-colors ${
-                    isNight ? 'border-slate-800/80 hover:bg-slate-900' : 'border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  Contact & Location
-                </a>
-              </div>
-            </div>
-
-            {/* Management & Database Buttons */}
-            {(onOpenDatabaseRecords || onOpenManagePhotos) && (
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-                  Owner & Management
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold">
-                  {onOpenManagePhotos && (
-                    <button
-                      onClick={() => {
-                        onOpenManagePhotos();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="p-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center gap-2 text-left"
-                    >
-                      <Camera className="w-4 h-4" />
-                      <span>Manage Photos (Owner)</span>
-                    </button>
-                  )}
-                  {onOpenDatabaseRecords && (
-                    <button
-                      onClick={() => {
-                        onOpenDatabaseRecords();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="p-2.5 rounded-lg border border-amber-400/30 bg-amber-400/10 text-amber-400 flex items-center gap-2 text-left"
-                    >
-                      <Database className="w-4 h-4" />
-                      <span>Database Records & Leads</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Bottom Mobile Action Buttons */}
-          <div className="pt-4 border-t border-slate-800/80 space-y-2.5">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onBookClick();
-              }}
-              className="w-full py-3.5 bg-gradient-to-r from-amber-400 to-amber-300 text-slate-950 font-serif font-bold text-sm tracking-wider uppercase rounded-xl flex items-center justify-center gap-2 shadow-lg cursor-pointer"
-            >
-              <Calendar className="w-4 h-4" />
-              <span>Reserve Room Now</span>
-            </button>
-
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <a
-                href="tel:+919163008361"
-                className={`py-2.5 px-3 border rounded-xl flex items-center justify-center gap-1.5 font-semibold ${
-                  isNight ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-100 border-slate-300 text-slate-900'
-                }`}
-              >
-                <Phone className="w-3.5 h-3.5 text-amber-400" />
-                <span>Call Desk</span>
-              </a>
-              <a
-                href="https://wa.me/919163008361?text=Hello%20Parijai%20Group%20of%20Hotels,%20I%20would%20like%20to%20inquire%20about%20rooms."
-                target="_blank"
-                rel="noreferrer"
-                className="py-2.5 px-3 bg-emerald-600 text-white rounded-xl flex items-center justify-center gap-1.5 font-semibold shadow"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                <span>WhatsApp</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

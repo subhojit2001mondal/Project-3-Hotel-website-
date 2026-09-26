@@ -188,11 +188,6 @@ export const Footer: React.FC<FooterProps> = ({
                   </button>
                 </li>
                 <li>
-                  <a href="#comparison" className="hover:text-amber-300">
-                    Property Comparison
-                  </a>
-                </li>
-                <li>
                   <a href="#guides" className="hover:text-amber-300">
                     Local Guides & Transit
                   </a>
@@ -306,7 +301,7 @@ export const Footer: React.FC<FooterProps> = ({
 
       {/* STICKY MOBILE ACTION BAR (Height capped to <15% of viewport, 3 touch-friendly buttons) */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-40 lg:hidden backdrop-blur-md border-t px-4 py-2.5 shadow-2xl transition-colors duration-300 ${
+        className={`fixed bottom-0 left-0 right-0 z-40 lg:hidden backdrop-blur-md border-t px-4 py-2.5 shadow-2xl transition-colors duration-300 pb-[max(0.625rem,env(safe-area-inset-bottom))] pr-[max(1rem,env(safe-area-inset-right))] ${
           isNight ? 'bg-slate-950/95 border-slate-800' : 'bg-white/95 border-slate-200 shadow-xl'
         }`}
       >

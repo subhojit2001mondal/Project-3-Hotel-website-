@@ -7,7 +7,6 @@ import React, { useState, useEffect } from 'react';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { Navbar } from './components/Navbar';
 import { HeroBookingBar } from './components/HeroBookingBar';
-import { PropertyComparison } from './components/PropertyComparison';
 import { PropertyShowcase } from './components/PropertyShowcase';
 import { LocalGuidesAndTrust } from './components/LocalGuidesAndTrust';
 import { Footer } from './components/Footer';
@@ -153,12 +152,6 @@ function MainAppContent() {
           setPurpose={setPurpose}
           onSearch={handleSearch}
           isLoading={isLoadingAvailability}
-        />
-
-        {/* Property Comparison Strip */}
-        <PropertyComparison
-          activeProperty={selectedProperty}
-          onChooseProperty={handleSelectProperty}
         />
 
         {/* Dedicated Property Showcases & Room Cards */}
